@@ -66,9 +66,9 @@ const aiService = {
         Yêu cầu trả về CHỈ MỘT CHUỖI JSON hợp lệ, không có markdown codeblock.
         Cấu trúc JSON yêu cầu:
         {
-            "action_type": "TRANSFER", // Trả về "TRANSFER" (chuyển tiền), "DEPOSIT" (nạp tiền), "WITHDRAW" (rút tiền), hoặc "REDEEM_CARD" (đổi thẻ cào)
+            "action_type": "TRANSFER", // Trả về "TRANSFER" (chuyển tiền), "DEPOSIT" (nạp tiền), "WITHDRAW" (rút tiền), hoặc "BUY_CARD" (mua thẻ cào)
             "amount": 50000,
-            "receiver_name": "Tên người nhận (chỉ áp dụng TRANSFER, hoặc nếu là REDEEM_CARD thì trả về tên nhà mạng viết hoa chữ cái đầu: 'Viettel', 'Vinaphone', 'Mobifone', 'Vietnamobile')",
+            "receiver_name": "Tên người nhận (chỉ áp dụng TRANSFER, hoặc nếu là BUY_CARD thì trả về tên nhà mạng viết hoa chữ cái đầu: 'Viettel', 'Vinaphone', 'Mobifone', 'Vietnamobile')",
             "note": "Nội dung giao dịch (nếu có, không thì để chuỗi rỗng)"
         }
         Lưu ý: amount phải là kiểu số nguyên (Integer). Ví dụ: '50k' -> 50000. 'năm mươi ngàn' -> 50000.

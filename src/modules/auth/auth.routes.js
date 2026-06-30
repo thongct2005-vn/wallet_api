@@ -19,6 +19,7 @@ router.post('/verify-otp', authLimiter, authController.verifyOtp);
 // --- Tính năng Authentication cốt lõi ---
 router.post('/register', authLimiter, authController.register);
 router.post('/login', authLimiter, authController.login);
+router.post('/refresh-token', authLimiter, authController.refreshToken);
 router.post('/logout', authenticateJwt, authController.logout);
 
 // --- Quản lý Mật khẩu ---

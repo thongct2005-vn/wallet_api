@@ -272,6 +272,90 @@ const paymentService = {
         } finally {
             client.release();
         }
+    },
+
+    // ===== NEW: Xử lý Auto-Debit (Thanh toán tự động qua Ví Liên kết) =====
+    processAutoDebit: async (merchantUserId, merchantId, userPhone, amount, merchantOrderId) => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            // 1. Tìm User theo số điện thoại
+            const merchantRepo = require('../merchant/merchant.repository');
+            const userId = await merchantRepo.findUserByPhone(userPhone);
+            if (!userId) throw new Error('Wallet_Not_Found');
+
+            // 2. Lấy thông tin Ví của User
+            const userWallet = await txRepo.getWalletByUserId(userId);
+            if (!userWallet) throw new Error('Wallet_Not_Found');
+
+            // 3. Kiểm tra số dư User
+            const balanceBefore = await txRepo.lockAndGetBalance(client, userWallet.id);
+            if (balanceBefore < amount) throw new Error('Insufficient_Balance');
+
+            // 4. Trừ tiền User
+            const balanceAfter = await txRepo.subtractBalance(client, userWallet.id, amount);
+
+            // 5. Tạo Order tự động (Thành công luôn)
+            const orderCode = 'AD' + Date.now() + Math.floor(Math.random() * 1000);
+            const expiredAt = new Date(Date.now() + 15 * 60 * 1000);
+            const orderId = await paymentRepo.createOrder(
+                client, merchantId, orderCode, amount, null, 'Auto-Debit Thanh toán', expiredAt, merchantOrderId
+            );
+            await paymentRepo.updateOrderStatus(client, orderId, 'SUCCESS');
+
+            // 6. Ghi chép Ledger cho User (DEBIT)
+            const { v7: uuidv7 } = require('uuid');
+            const paymentTxId = uuidv7();
+            const ledgerTxId = await txRepo.createLedgerTransaction(
+                client, 'PAYMENT', paymentTxId, 'PAYMENT', 'Thanh toán tự động ' + merchantOrderId, amount
+            );
+            await txRepo.createLedgerEntry(client, ledgerTxId, userWallet.id, 'DEBIT', amount, balanceBefore, balanceAfter);
+
+            // 7. Cộng tiền cho Merchant và thu phí 2% MDR
+            const merchantWallet = await txRepo.getWalletByUserId(merchantUserId);
+            if (merchantWallet) {
+                let feeAmount = 0n;
+                const orderAmountBig = BigInt(amount);
+                let netAmount = orderAmountBig;
+                const feeConfig = await paymentRepo.getFeeConfig('MERCHANT_MDR');
+                
+                if (feeConfig && feeConfig.fee_type === 'PERCENTAGE') {
+                    const mdrRateFloat = parseFloat(feeConfig.fee_value);
+                    feeAmount = BigInt(Math.round(Number(orderAmountBig) * mdrRateFloat));
+                    netAmount = orderAmountBig - feeAmount;
+                }
+
+                const mBalanceBefore = await txRepo.lockAndGetBalance(client, merchantWallet.id);
+                const mBalanceAfter = await txRepo.addBalance(client, merchantWallet.id, netAmount);
+                
+                await txRepo.createLedgerEntry(
+                    client, ledgerTxId, merchantWallet.id, 'CREDIT', netAmount, mBalanceBefore, mBalanceAfter, 'MERCHANT'
+                );
+
+                // Thu phí MDR
+                if (feeAmount > 0n) {
+                    await txRepo.createSystemLedgerEntry(
+                        client, ledgerTxId, 'SYS_FEE_MDR', 'CREDIT', feeAmount
+                    );
+                }
+            }
+
+            // 8. Lưu Transaction
+            await paymentRepo.createPaymentTransaction(client, orderId, userId, userWallet.id, amount, paymentTxId);
+
+            await client.query('COMMIT');
+            return {
+                order_id: merchantOrderId,
+                amount_paid: amount,
+                status: 'SUCCESS'
+            };
+        } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+        } finally {
+            client.release();
+        }
     }
 };
 

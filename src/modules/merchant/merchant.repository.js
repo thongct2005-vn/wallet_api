@@ -66,6 +66,55 @@ const merchantRepository = {
         return result.rows.length > 0 ? result.rows[0].id : null;
     },
 
+    getWalletIdByPhone: async (phone) => {
+        const query = `
+            SELECT w.id as wallet_id, u.id as user_id 
+            FROM users u 
+            JOIN wallets w ON u.id = w.user_id 
+            WHERE u.phone = $1 LIMIT 1
+        `;
+        const result = await pool.query(query, [phone]);
+        return result.rows.length > 0 ? result.rows[0] : null;
+    },
+
+    getLinkedService: async (userId, serviceName) => {
+        const query = 'SELECT limit_per_day FROM user_linked_services WHERE user_id = $1 AND service_name LIKE $2 LIMIT 1';
+        const result = await pool.query(query, [userId, '%' + serviceName + '%']);
+        return result.rows.length > 0 ? result.rows[0] : null;
+    },
+
+    getDailyUsageForMerchant: async (walletId, merchantId) => {
+        const query = `
+            SELECT SUM(pt.amount) as total
+            FROM payment_transactions pt
+            JOIN payment_orders po ON pt.payment_order_id = po.id
+            WHERE pt.payer_wallet_id = $1 
+              AND po.merchant_id = $2 
+              AND pt.created_at >= CURRENT_DATE
+              AND pt.status = 'SUCCESS'
+        `;
+        const result = await pool.query(query, [walletId, merchantId]);
+        return result.rows.length > 0 && result.rows[0].total ? BigInt(result.rows[0].total) : 0n;
+    },
+
+    getUserPinHashByPhone: async (phone) => {
+        const query = 'SELECT pin_hash FROM users WHERE phone = $1 LIMIT 1';
+        const result = await pool.query(query, [phone]);
+        return result.rows.length > 0 ? result.rows[0].pin_hash : null;
+    },
+
+    getMerchantByApiKey: async (apiKey) => {
+        const query = `
+            SELECT m.id, m.merchant_name, mu.user_id as merchant_user_id 
+            FROM merchants m
+            JOIN merchant_api_keys mak ON m.id = mak.merchant_id
+            JOIN merchant_users mu ON m.id = mu.merchant_id
+            WHERE mak.api_key = $1 AND mu.is_owner = true LIMIT 1
+        `;
+        const result = await pool.query(query, [apiKey]);
+        return result.rows.length > 0 ? result.rows[0] : null;
+    },
+
     checkMerchantExistsByUser: async (userId) => {
         const query = 'SELECT id FROM merchant_users WHERE user_id = $1';
         const result = await pool.query(query, [userId]);

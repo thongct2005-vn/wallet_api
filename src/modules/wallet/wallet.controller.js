@@ -179,6 +179,26 @@ const walletController = {
             console.error('Lỗi kiểm tra mã PIN:', error);
             res.status(500).json({ error: 'Lỗi hệ thống khi kiểm tra mã PIN' });
         }
+    },
+
+    getLinkedServices: async (req, res) => {
+        try {
+            const userId = req.user.userId;
+            const result = await pool.query(`
+                SELECT id, service_name, service_icon, limit_per_day, status, created_at 
+                FROM user_linked_services 
+                WHERE user_id = $1 
+                ORDER BY created_at DESC
+            `, [userId]);
+            
+            res.status(200).json({
+                message: 'Lấy danh sách dịch vụ liên kết thành công',
+                data: result.rows
+            });
+        } catch (error) {
+            console.error('Lỗi lấy danh sách dịch vụ liên kết:', error);
+            res.status(500).json({ error: 'Lỗi hệ thống khi lấy dịch vụ liên kết' });
+        }
     }
 };
 

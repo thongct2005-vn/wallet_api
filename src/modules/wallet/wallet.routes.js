@@ -19,4 +19,6 @@ router.post('/link-bank', walletController.linkBank);
 
 router.post('/verify-pin', walletController.verifyPin);
 
+router.get('/linked-services', walletController.getLinkedServices);
+
 module.exports = router;

@@ -40,7 +40,7 @@
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1",
     "twilio": "^6.0.2",
-    "uuid": "^14.0.0",
+    "uuid": "^14.0.1",
     "xlsx-populate": "^1.21.0"
   }
 }

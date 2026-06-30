@@ -51,6 +51,51 @@ const aiController = {
                 }
             }
 
+            if (data.action_type === 'DEPOSIT') {
+                if (!data.amount || isNaN(data.amount) || data.amount < 10000 || data.amount > 50000000) {
+                    return res.status(400).json({ error: "Số tiền nạp phải từ 10.000đ đến 50.000.000đ." });
+                }
+
+                const userId = req.user.userId;
+                const wallet = await walletRepository.findByUserId(userId);
+                if (!wallet) {
+                    return res.status(400).json({ error: "Không tìm thấy ví của bạn" });
+                }
+
+                const limitsData = await walletRepository.getLimitsAndUsage(wallet.id);
+                const dailyLimit = BigInt(limitsData.limits.daily_deposit_limit || 50000000);
+                const dailyUsage = BigInt(limitsData.usage.daily_deposit_usage || 0);
+
+                if (BigInt(data.amount) + dailyUsage > dailyLimit) {
+                    return res.status(400).json({ error: `Số tiền vượt quá hạn mức nạp trong ngày còn lại (${(dailyLimit - dailyUsage).toLocaleString('vi-VN')}đ).` });
+                }
+            }
+
+            if (data.action_type === 'WITHDRAW') {
+                if (!data.amount || isNaN(data.amount) || data.amount < 10000 || data.amount > 50000000) {
+                    return res.status(400).json({ error: "Số tiền rút phải từ 10.000đ đến 50.000.000đ." });
+                }
+
+                const userId = req.user.userId;
+                const walletBalance = await walletRepository.getBalanceByUserId(userId);
+                if (!walletBalance) {
+                    return res.status(400).json({ error: "Không tìm thấy ví của bạn" });
+                }
+
+                if (BigInt(walletBalance.available_balance) < BigInt(data.amount)) {
+                    return res.status(400).json({ error: "Số dư trong ví không đủ để thực hiện giao dịch này" });
+                }
+
+                const wallet = await walletRepository.findByUserId(userId);
+                const limitsData = await walletRepository.getLimitsAndUsage(wallet.id);
+                const dailyLimit = BigInt(limitsData.limits.daily_withdrawal_limit || 50000000);
+                const dailyUsage = BigInt(limitsData.usage.daily_withdrawal_usage || 0);
+
+                if (BigInt(data.amount) + dailyUsage > dailyLimit) {
+                    return res.status(400).json({ error: `Số tiền vượt quá hạn mức rút trong ngày còn lại (${(dailyLimit - dailyUsage).toLocaleString('vi-VN')}đ).` });
+                }
+            }
+
             return res.status(200).json({
                 message: "Trích xuất thành công",
                 data: data
