@@ -18,7 +18,7 @@ const { handleAdminError } = require('../_shared/admin-error');
 const dashboardController = {
     getDashboardKPIs: async (req, res) => {
         try {
-            const result = await dashboardService.getDashboardKPIs();
+            const result = await dashboardService.getDashboardKPIs(req.query);
             return res.status(200).json({ 
                 success: true, 
                 message: 'Lấy dữ liệu Dashboard thành công', 

@@ -1,0 +1,35 @@
+Chủ đề: Hướng dẫn sử dụng tính năng Chia tiền nhóm (Split Bill) trên ví Mio247.
+Từ khóa phụ: Chia tiền, chia bill, split bill, chia đều, chia tiền ăn uống, nhắc nhở trả tiền, tạo nhóm chia tiền.
+
+--- GIỚI THIỆU TÍNH NĂNG ---
+Tính năng Chia tiền nhóm (Split Bill) giúp bạn dễ dàng chia sẻ chi phí với bạn bè khi đi ăn uống, mua sắm hoặc hoạt động nhóm. Người tạo nhóm chia tiền sẽ gửi yêu cầu thanh toán đến từng thành viên.
+
+--- HƯỚNG DẪN TẠO NHÓM CHIA TIỀN ---
+Bước 1: Tại trang chủ, chọn "Chia tiền" hoặc "Split Bill".
+Bước 2: Nhập tổng số tiền cần chia (ví dụ: 500.000 VNĐ cho bữa ăn nhóm).
+Bước 3: Chọn những người bạn muốn chia tiền cùng từ danh bạ hoặc tìm kiếm bằng số điện thoại. Bạn có thể thêm nhiều người.
+Bước 4: Chọn cách chia:
+  - Chia đều: Tổng số tiền chia đều cho tất cả thành viên (bao gồm cả bạn).
+  - Tùy chỉnh: Nhập số tiền cụ thể cho từng thành viên.
+Bước 5: Thêm ghi chú mô tả (ví dụ: "Ăn lẩu tối thứ 7").
+Bước 6: Xác nhận và gửi yêu cầu chia tiền. Các thành viên sẽ nhận được thông báo.
+
+--- THANH TOÁN PHẦN CHIA TIỀN ---
+Khi nhận được yêu cầu chia tiền:
+Bước 1: Mở thông báo hoặc vào phần "Chia tiền" để xem danh sách yêu cầu.
+Bước 2: Xem chi tiết: Ai tạo nhóm, tổng số tiền, phần tiền của bạn.
+Bước 3: Nhấn "Thanh toán" để chuyển phần tiền của mình cho người tạo nhóm.
+Bước 4: Xác nhận bằng mã PIN ví. Giao dịch được xử lý ngay lập tức.
+
+--- NHẮC NHỞ THANH TOÁN ---
+Nếu có thành viên chưa thanh toán phần chia tiền:
+Bước 1: Mở chi tiết nhóm chia tiền mà bạn đã tạo.
+Bước 2: Xem danh sách thành viên chưa thanh toán.
+Bước 3: Nhấn nút "Nhắc nhở" để gửi thông báo push đến thiết bị của người đó.
+Lưu ý: Hệ thống sẽ tự động gửi thông báo nhắc nhở khi gần đến hạn.
+
+--- QUẢN LÝ LỊCH SỬ CHIA TIỀN ---
+Tại màn hình "Chia tiền", bạn có thể xem toàn bộ lịch sử các nhóm chia tiền, bao gồm:
+- Nhóm bạn đã tạo (vai trò: Người tạo).
+- Nhóm bạn tham gia (vai trò: Thành viên).
+- Trạng thái thanh toán của từng thành viên trong nhóm.

@@ -239,6 +239,13 @@
  *     tags: [Payment]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: Idempotency-Key
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Mã duy nhất để chống trùng lặp giao dịch (VD UUID). Gửi lại cùng một mã trong thời gian ngắn sẽ không thực hiện lại giao dịch.
  *     requestBody:
  *       required: true
  *       content:

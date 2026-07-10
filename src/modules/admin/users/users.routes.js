@@ -40,7 +40,8 @@ const notImplemented = require('../../../utils/notImplemented');
  *       200:
  *         description: Danh sach user
  *   post:
- *     summary: Admin tao user
+ *     summary: Admin tao nguoi dung vi
+ *     description: Tao nguoi dung vi moi, he thong tu dong tao vi mac dinh va gan role USER.
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -50,7 +51,7 @@ const notImplemented = require('../../../utils/notImplemented');
  *         application/json:
  *           schema:
  *             type: object
- *             required: [full_name, password]
+ *             required: [full_name]
  *             properties:
  *               full_name:
  *                 type: string
@@ -60,17 +61,56 @@ const notImplemented = require('../../../utils/notImplemented');
  *                 type: string
  *               phone:
  *                 type: string
- *               password:
+ *               status:
  *                 type: string
- *                 example: Password@123
+ *                 enum: [ACTIVE, LOCKED]
+ *     responses:
+ *       201:
+ *         description: Wallet User created. Tra ve temporary_password, sms_sent, sms_provider
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               data:
+ *                 id: "uuid"
+ *                 temporary_password: "123456"
+ *                 sms_sent: false
+ *                 sms_mocked: true
+ *                 sms_provider: "MOCK"
+ * /api/v1/admin/staffs:
+ *   post:
+ *     summary: Admin tao nhan vien
+ *     description: Tao nhan vien noi bo, chi dinh role RBAC, khong tu dong tao vi. Staff se nhan duoc email onboarding cap mat khau. Super Admin moi duoc tao SUPER_ADMIN/ADMIN.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [full_name, email, role_codes]
+ *             properties:
+ *               full_name:
+ *                 type: string
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *                 enum: [ACTIVE, LOCKED]
  *               role_codes:
  *                 type: array
  *                 items:
  *                   type: string
- *                 example: ["USER"]
+ *                 example: ["SUPPORT_STAFF"]
  *     responses:
  *       201:
- *         description: User created
+ *         description: Staff created
  * /api/v1/admin/users/{id}:
  *   get:
  *     summary: Admin xem chi tiet user
@@ -203,20 +243,24 @@ const notImplemented = require('../../../utils/notImplemented');
  *         application/json:
  *           schema:
  *             type: object
- *             required: [new_password, confirm_new_password, reason]
+ *             required: [reason]
  *             properties:
- *               new_password:
- *                 type: string
- *                 example: NewPassword@123
- *               confirm_new_password:
- *                 type: string
- *                 example: NewPassword@123
  *               reason:
  *                 type: string
  *                 example: User requested account recovery
  *     responses:
  *       200:
- *         description: Password reset
+ *         description: Password reset. Tra ve temporary_password moi va thong tin sms_sent (neu la USER)
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               data:
+ *                 id: "uuid"
+ *                 temporary_password: "123456"
+ *                 sms_sent: false
+ *                 sms_mocked: true
+ *                 sms_provider: "MOCK"
  *       400:
  *         description: Du lieu khong hop le
  *       403:
@@ -262,8 +306,8 @@ const notImplemented = require('../../../utils/notImplemented');
 
 
 router.get('/users', requirePermission('admin.users.read'), usersController.listUsers);
-router.post('/customers', requirePermission('admin.users.create'), usersValidator.validateCreateCustomer, usersController.createCustomer);
-router.post('/staffs', requirePermission('admin.users.create'), usersValidator.validateCreateStaff, usersController.createStaff);
+router.post('/users', requirePermission('admin.users.create'), usersValidator.validateCreateWalletUser, usersController.createWalletUser);
+router.post('/staffs', requirePermission('admin.staffs.create'), usersValidator.validateCreateStaff, usersController.createStaff);
 router.get('/users/:id', requirePermission('admin.users.read'), usersValidator.validateIdParam, usersController.getUserDetail);
 router.patch('/users/:id', requirePermission('admin.users.update'), usersValidator.validateIdParam, usersController.updateUser);
 router.get('/users/:id/wallet', requirePermission('admin.wallets.read'), usersValidator.validateIdParam, usersController.getUserWallet);

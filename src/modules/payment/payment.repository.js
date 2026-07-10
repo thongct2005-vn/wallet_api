@@ -58,6 +58,11 @@ const paymentRepository = {
         await client.query(query, [status, orderId]);
     },
 
+    updateQrCodeStatus: async (client, qrToken, status) => {
+        const query = `UPDATE payment_qr_codes SET status = $1, used_at = CURRENT_TIMESTAMP WHERE qr_token = $2`;
+        await client.query(query, [status, qrToken]);
+    },
+
     createPaymentTransaction: async (client, orderId, userId, payerWalletId, amount, preGeneratedId = null) => {
         const newId = preGeneratedId || uuidv7();
         const query = `
@@ -131,11 +136,41 @@ const paymentRepository = {
         return result.rows[0];
     },
 
-    // ===== NEW: Cấu hình phí =====
+    // Cấu hình phí 
     getFeeConfig: async (feeCode) => {
         const query = `SELECT fee_value, fee_type FROM fee_configs WHERE fee_code = $1`;
         const result = await pool.query(query, [feeCode]);
         return result.rows[0];
+    },
+
+    cancelPaymentOrder: async (orderId) => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            await client.query(`UPDATE payment_orders SET status = 'CANCELED', canceled_at = CURRENT_TIMESTAMP WHERE id = $1`, [orderId]);
+            await client.query(`UPDATE payment_qr_codes SET status = 'CANCELED' WHERE payment_order_id = $1`, [orderId]);
+            await client.query('COMMIT');
+        } catch (e) {
+            await client.query('ROLLBACK');
+            throw e;
+        } finally {
+            client.release();
+        }
+    },
+
+    lazyUpdateOrderToExpired: async (orderId) => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            await client.query(`UPDATE payment_orders SET status = 'EXPIRED' WHERE id = $1 AND status = 'PENDING'`, [orderId]);
+            await client.query(`UPDATE payment_qr_codes SET status = 'EXPIRED' WHERE payment_order_id = $1 AND status = 'ACTIVE'`, [orderId]);
+            await client.query('COMMIT');
+        } catch (e) {
+            await client.query('ROLLBACK');
+            throw e;
+        } finally {
+            client.release();
+        }
     }
 };
 

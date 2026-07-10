@@ -3,7 +3,7 @@ const { v7: uuidv7 } = require('uuid');
 
 function getRequestMeta(req) {
     return {
-        userId: req.user?.id || req.user?.userId || null,
+        actorId: req.user?.id || req.user?.userId || null,
         roles: req.user?.roles || [],
         ipAddress: req.ip || req.connection?.remoteAddress || null,
         userAgent: req.headers['user-agent'] || null

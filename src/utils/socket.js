@@ -6,7 +6,13 @@ let io;
 const initSocket = (server) => {
     io = new Server(server, {
         cors: {
-            origin: "*",
+            // [SECURITY FIX] Thay "*" bằng whitelist domain cụ thể (đồng bộ với HTTP CORS)
+            origin: [
+                'http://localhost:3000',
+                'http://localhost:5173',
+                'https://admin.yourdomain.com',
+                'https://merchant.yourdomain.com'
+            ],
             methods: ["GET", "POST"]
         }
     });
@@ -14,7 +20,7 @@ const initSocket = (server) => {
     // Middleware xác thực socket bằng JWT
     io.use((socket, next) => {
         const token = socket.handshake.auth.token || socket.handshake.query.token;
-        
+
         if (!token) {
             return next(new Error('Authentication error: No token provided'));
         }
@@ -34,6 +40,19 @@ const initSocket = (server) => {
 
         // Mỗi user tham gia vào một room riêng dựa trên userId
         socket.join(`user_${userId}`);
+        
+        // Nếu là Admin, tham gia vào room admin_dashboard để nhận realtime KPI
+        const isAdmin = 
+            socket.user.role === 'ADMIN' || socket.user.role === 'SUPER_ADMIN' ||
+            socket.user.role_code === 'ADMIN' || socket.user.role_code === 'SUPER_ADMIN' ||
+            socket.user.userType === 'ADMIN' || socket.user.userType === 'SUPER_ADMIN' ||
+            socket.user.user_type === 'ADMIN' || socket.user.user_type === 'SUPER_ADMIN' ||
+            (Array.isArray(socket.user.roles) && (socket.user.roles.includes('ADMIN') || socket.user.roles.includes('SUPER_ADMIN')));
+
+        if (isAdmin) {
+            socket.join('admin_dashboard');
+            console.log(`User ${userId} joined admin_dashboard`);
+        }
 
         socket.on('send_message', async (data) => {
             console.log('--- Socket send_message received ---', data);
@@ -48,7 +67,7 @@ const initSocket = (server) => {
 
                 const messageType = data.messageType || 'TEXT';
                 const msg = await transactionRepository.saveChatMessage(senderWallet.id, receiverWallet.id, data.content, messageType);
-                
+
                 // Format msg để đồng nhất với API
                 const formattedMsg = {
                     id: msg.id,
@@ -115,4 +134,10 @@ const emitToUser = (userId, event, data) => {
     }
 };
 
-module.exports = { initSocket, getIo, emitToUser };
+const broadcastToAdminDashboard = (event, data) => {
+    if (io) {
+        io.to('admin_dashboard').emit(event, data);
+    }
+};
+
+module.exports = { initSocket, getIo, emitToUser, broadcastToAdminDashboard };

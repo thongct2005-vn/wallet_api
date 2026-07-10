@@ -13,7 +13,7 @@ const merchantsValidator = {
     validateActionReason: (req, res, next) => {
         // reason is required for reject and suspend
         const action = req.path.split('/').pop(); // "approve", "reject", "suspend", "activate", "rotate", "revoke"
-        const reason = req.body.reason;
+        const reason = (req.body || {}).reason;
 
         if (['reject', 'suspend', 'revoke'].includes(action)) {
             if (!reason || typeof reason !== 'string' || reason.trim() === '') {
@@ -37,18 +37,18 @@ const merchantsValidator = {
     },
 
     validateCreateMerchant: (req, res, next) => {
-        const { merchant_code, merchant_name, business_type, owner_info } = req.body;
-        if (!merchant_code || !merchant_name || !business_type) {
+        const { merchant_name, business_type, owner_info } = req.body;
+        if (!merchant_name || !business_type) {
             return res.status(400).json({
                 success: false,
-                message: 'merchant_code, merchant_name, business_type are required',
+                message: 'merchant_name, business_type are required',
                 error_code: 'Validation_Error'
             });
         }
-        if (!owner_info || !owner_info.full_name || !owner_info.username || (!owner_info.email && !owner_info.phone)) {
+        if (!owner_info || !owner_info.full_name || !owner_info.username || !owner_info.email) {
              return res.status(400).json({
                 success: false,
-                message: 'owner_info with full_name, username, and email/phone is required',
+                message: 'owner_info with full_name, username, and email is required (email la bat buoc doi voi merchant)',
                 error_code: 'Validation_Error'
             });
         }
@@ -56,11 +56,19 @@ const merchantsValidator = {
     },
 
     validateCreateApiKey: (req, res, next) => {
-        const { key_name, environment } = req.body;
+        const body = req.body || {};
+        const { key_name, environment } = body;
         if (!key_name || !environment) {
             return res.status(400).json({
                 success: false,
                 message: 'key_name, environment are required',
+                error_code: 'Validation_Error'
+            });
+        }
+        if (!['SANDBOX', 'LIVE'].includes(environment)) {
+            return res.status(400).json({
+                success: false,
+                message: 'environment must be SANDBOX or LIVE',
                 error_code: 'Validation_Error'
             });
         }

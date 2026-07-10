@@ -16,31 +16,45 @@ const reportsRepository = require('./reports.repository');
 
 const reportsService = {
     getWalletTransactions: async (query) => {
-        const { page, limit, from, to, type, status } = query;
+        const from = query.from || query.fromDate;
+        const to = query.to || query.toDate;
+        const { page, limit, type, status } = query;
         return reportsRepository.getWalletTransactions({ page, limit, from, to, type, status });
     },
     getTopupReport: async (query) => {
-        const { page, limit, from, to, status } = query;
+        const from = query.from || query.fromDate;
+        const to = query.to || query.toDate;
+        const { page, limit, status } = query;
         return reportsRepository.getTopupReport({ page, limit, from, to, status });
     },
     getTransferReport: async (query) => {
-        const { page, limit, from, to, status } = query;
+        const from = query.from || query.fromDate;
+        const to = query.to || query.toDate;
+        const { page, limit, status } = query;
         return reportsRepository.getTransferReport({ page, limit, from, to, status });
     },
     getPaymentReport: async (query) => {
-        const { page, limit, from, to, status, merchant_id } = query;
+        const from = query.from || query.fromDate;
+        const to = query.to || query.toDate;
+        const { page, limit, status, merchant_id } = query;
         return reportsRepository.getPaymentReport({ page, limit, from, to, status, merchant_id });
     },
     getRefundReport: async (query) => {
-        const { page, limit, from, to, status, merchant_id } = query;
+        const from = query.from || query.fromDate;
+        const to = query.to || query.toDate;
+        const { page, limit, status, merchant_id } = query;
         return reportsRepository.getRefundReport({ page, limit, from, to, status, merchant_id });
     },
     getMerchantReport: async (query) => {
-        const { page, limit, from, to, status } = query;
+        const from = query.from || query.fromDate;
+        const to = query.to || query.toDate;
+        const { page, limit, status } = query;
         return reportsRepository.getMerchantReport({ page, limit, from, to, status });
     },
     exportReport: async (query) => {
-        const { type, from, to, status } = query;
+        const from = query.from || query.fromDate;
+        const to = query.to || query.toDate;
+        const { type, status } = query;
         const params = { page: 1, limit: 10000, from, to, status };
         
         let reportData;

@@ -113,7 +113,8 @@ VALUES
   ('02000000-0000-0000-0000-000000000032', 'admin.dashboard.read', 'Admin read dashboard', 'Admin xem dashboard he thong', '2026-06-20 07:10:00+07'),
   ('02000000-0000-0000-0000-000000000033', 'admin.settings.manage', 'Admin manage settings', 'Super Admin cau hinh he thong', '2026-06-20 07:10:00+07'),
   ('02000000-0000-0000-0000-000000000034', 'admin.reports.read', 'Admin read reports', 'Admin xem bao cao', '2026-06-20 07:10:00+07'),
-  ('02000000-0000-0000-0000-000000000035', 'admin.users.create', 'Admin create users', 'Admin tao nguoi dung moi', '2026-06-20 07:10:00+07'),
+  ('02000000-0000-0000-0000-000000000035', 'admin.users.create', 'Admin create wallet users', 'Admin tao nguoi dung vi', '2026-06-20 07:10:00+07'),
+  ('02000000-0000-0000-0000-000000000050', 'admin.staffs.create', 'Admin create staffs', 'Admin tao nhan vien', '2026-06-20 07:10:00+07'),
   ('02000000-0000-0000-0000-000000000036', 'admin.users.update', 'Admin update users', 'Admin cap nhat thong tin nguoi dung', '2026-06-20 07:10:00+07'),
   ('02000000-0000-0000-0000-000000000037', 'admin.users.reset_password', 'Admin reset password users', 'Admin reset mat khau nguoi dung', '2026-06-20 07:10:00+07')
 ON CONFLICT (code) DO NOTHING;
@@ -182,11 +183,11 @@ VALUES
   ('10000000-0000-0000-0000-000000000003', 'SUPPORT_STAFF', 'Le Demo Support', 'support.ops', 'support@ewallet-demo.test', '0909333333', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'ACTIVE', 0, NULL, '2026-06-20 08:30:00+07', true, NULL, 1, '2026-06-20 07:32:00+07', '2026-06-20 08:30:00+07', NULL, NULL, NULL),
   ('10000000-0000-0000-0000-000000000004', 'MERCHANT_USER', 'Pham Merchant Owner', 'owner.alpha', 'owner@alpha-mart.test', '0909444444', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'ACTIVE', 0, NULL, '2026-06-20 08:40:00+07', true, NULL, 1, '2026-06-20 07:33:00+07', '2026-06-20 08:40:00+07', NULL, NULL, NULL),
   ('10000000-0000-0000-0000-000000000005', 'MERCHANT_USER', 'Dang Merchant Staff', 'staff.beta', 'staff@beta-coffee.test', '0909555555', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'ACTIVE', 0, NULL, '2026-06-20 08:45:00+07', true, NULL, 1, '2026-06-20 07:34:00+07', '2026-06-20 08:45:00+07', NULL, NULL, NULL),
-  ('10000000-0000-0000-0000-000000000101', 'USER', 'Nguyen Thi An', 'an.nguyen', 'an@customer.test', '0911000001', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'ACTIVE', 0, NULL, '2026-06-20 09:00:00+07', true, '$2b$10$YKyDhOPeG2iZJjwql4CNhO6nZevsjhK/z7JhAWXpihqPgKDnnv4lW', 1, '2026-06-20 07:40:00+07', '2026-06-20 09:00:00+07', 'LOYALTY-DEMO-000001', NULL, NULL),
-  ('10000000-0000-0000-0000-000000000102', 'USER', 'Tran Minh Binh', 'binh.tran', 'binh@customer.test', '0911000002', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'ACTIVE', 0, NULL, '2026-06-20 09:05:00+07', true, '$2b$10$YKyDhOPeG2iZJjwql4CNhO6nZevsjhK/z7JhAWXpihqPgKDnnv4lW', 1, '2026-06-20 07:41:00+07', '2026-06-20 09:05:00+07', 'LOYALTY-DEMO-000002', NULL, NULL),
-  ('10000000-0000-0000-0000-000000000103', 'USER', 'Le Thanh Chi', 'chi.le', 'chi@customer.test', '0911000003', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'ACTIVE', 0, NULL, '2026-06-20 09:10:00+07', true, '$2b$10$YKyDhOPeG2iZJjwql4CNhO6nZevsjhK/z7JhAWXpihqPgKDnnv4lW', 1, '2026-06-20 07:42:00+07', '2026-06-20 09:10:00+07', 'LOYALTY-DEMO-000003', NULL, NULL),
-  ('10000000-0000-0000-0000-000000000104', 'USER', 'Pham Quoc Dung', 'dung.pham', 'dung@customer.test', '0911000004', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'ACTIVE', 0, NULL, '2026-06-20 09:15:00+07', true, '$2b$10$YKyDhOPeG2iZJjwql4CNhO6nZevsjhK/z7JhAWXpihqPgKDnnv4lW', 1, '2026-06-20 07:43:00+07', '2026-06-20 09:15:00+07', 'LOYALTY-DEMO-000004', NULL, NULL),
-  ('10000000-0000-0000-0000-000000000105', 'USER', 'Do Hoai Giang', 'giang.do', 'giang@customer.test', '0911000005', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'LOCKED', 5, '2026-06-21 08:00:00+07', '2026-06-19 18:00:00+07', false, '$2b$10$YKyDhOPeG2iZJjwql4CNhO6nZevsjhK/z7JhAWXpihqPgKDnnv4lW', 2, '2026-06-20 07:44:00+07', '2026-06-20 07:44:00+07', 'LOYALTY-DEMO-000005', NULL, NULL);
+  ('10000000-0000-0000-0000-000000000101', 'USER', 'Nguyen Thi An', 'an.nguyen', 'an@walletuser.test', '0911000001', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'ACTIVE', 0, NULL, '2026-06-20 09:00:00+07', true, '$2b$10$YKyDhOPeG2iZJjwql4CNhO6nZevsjhK/z7JhAWXpihqPgKDnnv4lW', 1, '2026-06-20 07:40:00+07', '2026-06-20 09:00:00+07', 'LOYALTY-DEMO-000001', NULL, NULL),
+  ('10000000-0000-0000-0000-000000000102', 'USER', 'Tran Minh Binh', 'binh.tran', 'binh@walletuser.test', '0911000002', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'ACTIVE', 0, NULL, '2026-06-20 09:05:00+07', true, '$2b$10$YKyDhOPeG2iZJjwql4CNhO6nZevsjhK/z7JhAWXpihqPgKDnnv4lW', 1, '2026-06-20 07:41:00+07', '2026-06-20 09:05:00+07', 'LOYALTY-DEMO-000002', NULL, NULL),
+  ('10000000-0000-0000-0000-000000000103', 'USER', 'Le Thanh Chi', 'chi.le', 'chi@walletuser.test', '0911000003', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'ACTIVE', 0, NULL, '2026-06-20 09:10:00+07', true, '$2b$10$YKyDhOPeG2iZJjwql4CNhO6nZevsjhK/z7JhAWXpihqPgKDnnv4lW', 1, '2026-06-20 07:42:00+07', '2026-06-20 09:10:00+07', 'LOYALTY-DEMO-000003', NULL, NULL),
+  ('10000000-0000-0000-0000-000000000104', 'USER', 'Pham Quoc Dung', 'dung.pham', 'dung@walletuser.test', '0911000004', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'ACTIVE', 0, NULL, '2026-06-20 09:15:00+07', true, '$2b$10$YKyDhOPeG2iZJjwql4CNhO6nZevsjhK/z7JhAWXpihqPgKDnnv4lW', 1, '2026-06-20 07:43:00+07', '2026-06-20 09:15:00+07', 'LOYALTY-DEMO-000004', NULL, NULL),
+  ('10000000-0000-0000-0000-000000000105', 'USER', 'Do Hoai Giang', 'giang.do', 'giang@walletuser.test', '0911000005', '$2b$10$5LcBk4SZrWQAR4b8j7.gSuDXwEuZ7wcuMl.UJ5NPVpUNU1KFkb45e', 'LOCKED', 5, '2026-06-21 08:00:00+07', '2026-06-19 18:00:00+07', false, '$2b$10$YKyDhOPeG2iZJjwql4CNhO6nZevsjhK/z7JhAWXpihqPgKDnnv4lW', 2, '2026-06-20 07:44:00+07', '2026-06-20 07:44:00+07', 'LOYALTY-DEMO-000005', NULL, NULL);
 
 INSERT INTO user_roles (user_id, role_id, created_at)
 SELECT '10000000-0000-0000-0000-000000000001'::uuid, id, '2026-06-20 07:50:00+07'::timestamptz FROM roles WHERE code = 'SUPER_ADMIN'
@@ -387,8 +388,8 @@ VALUES
 
 INSERT INTO otp_tracking (id, phone, email, otp_hash, purpose, failed_attempts, locked_until, expired_at, used_at, created_at)
 VALUES
-  ('72000000-0000-0000-0000-000000000001', '0911000001', 'an@customer.test', 'sha256:demo-otp-used-0001', 'AUTH', 0, NULL, '2026-06-20 09:05:00+07', '2026-06-20 09:00:10+07', '2026-06-20 09:00:00+07'),
-  ('72000000-0000-0000-0000-000000000002', '0911000005', 'giang@customer.test', 'sha256:demo-otp-failed-0002', 'AUTH', 3, '2026-06-21 08:00:00+07', '2026-06-20 08:05:00+07', NULL, '2026-06-20 08:00:00+07');
+  ('72000000-0000-0000-0000-000000000001', '0911000001', 'an@walletuser.test', 'sha256:demo-otp-used-0001', 'AUTH', 0, NULL, '2026-06-20 09:05:00+07', '2026-06-20 09:00:10+07', '2026-06-20 09:00:00+07'),
+  ('72000000-0000-0000-0000-000000000002', '0911000005', 'giang@walletuser.test', 'sha256:demo-otp-failed-0002', 'AUTH', 3, '2026-06-21 08:00:00+07', '2026-06-20 08:05:00+07', NULL, '2026-06-20 08:00:00+07');
 
 INSERT INTO notifications (id, user_id, title, content, notification_type, reference_id, status, read_at, created_at, updated_at)
 VALUES

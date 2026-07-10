@@ -46,7 +46,7 @@ const walletsController = {
             const result = await walletsService.lockWallet({
                 actor: req.user,
                 walletId: req.params.id,
-                reason: req.body.reason,
+                reason: req.body?.reason,
                 ...getRequestMeta(req)
             });
             return success(res, result, 'Khoa vi thanh cong');
@@ -60,7 +60,7 @@ const walletsController = {
             const result = await walletsService.unlockWallet({
                 actor: req.user,
                 walletId: req.params.id,
-                reason: req.body.reason,
+                reason: req.body?.reason,
                 ...getRequestMeta(req)
             });
             return success(res, result, 'Mo khoa vi thanh cong');

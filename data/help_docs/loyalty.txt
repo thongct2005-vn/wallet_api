@@ -1,0 +1,27 @@
+Chủ đề: Hướng dẫn về chương trình Tích điểm Thưởng (Loyalty Points) trên ví Mio247.
+Từ khóa phụ: Tích điểm, điểm thưởng, loyalty, điểm Mio, đổi điểm, kiểm tra điểm, điểm danh, check-in hàng ngày, điểm hết hạn.
+
+--- GIỚI THIỆU CHƯƠNG TRÌNH TÍCH ĐIỂM ---
+Mio247 có chương trình tích điểm thưởng (Loyalty Points) giúp bạn nhận thêm ưu đãi khi sử dụng ví. Điểm thưởng có thể tích lũy qua các hoạt động hàng ngày và giao dịch tài chính.
+
+--- CÁCH TÍCH ĐIỂM ---
+Bạn có thể tích điểm bằng các cách sau:
+1. Điểm danh hàng ngày (Daily Check-in): Mở ứng dụng mỗi ngày và nhấn "Điểm danh" tại trang Ưu đãi để nhận điểm thưởng. Điểm danh liên tiếp nhiều ngày sẽ nhận được phần thưởng lớn hơn.
+2. Thực hiện giao dịch: Mỗi giao dịch chuyển tiền, nạp tiền, hoặc thanh toán tại cửa hàng đối tác đều có thể tích điểm (tùy theo chương trình đang áp dụng).
+3. Tham gia sự kiện khuyến mãi: Các sự kiện đặc biệt có thể tặng điểm thưởng bổ sung.
+
+--- KIỂM TRA SỐ ĐIỂM HIỆN TẠI ---
+Bước 1: Vào phần "Ưu đãi" hoặc "Loyalty" từ trang chủ.
+Bước 2: Số điểm tổng hiện tại sẽ hiển thị ở đầu trang.
+Bước 3: Bạn cũng có thể xem lịch sử tích điểm và lịch sử sử dụng điểm tại đây.
+
+--- ĐIỂM DANH HÀNG NGÀY (CHECK-IN) ---
+Bước 1: Vào phần "Ưu đãi" hoặc "Loyalty".
+Bước 2: Nhấn nút "Điểm danh hôm nay" hoặc "Check-in".
+Bước 3: Điểm thưởng sẽ được cộng ngay vào tài khoản.
+Lưu ý: Mỗi ngày chỉ được điểm danh 1 lần. Điểm danh liên tiếp 7 ngày sẽ nhận được phần thưởng đặc biệt.
+
+--- QUY ĐỊNH VỀ ĐIỂM ---
+- Điểm thưởng có thời hạn sử dụng 6 tháng kể từ ngày tích. Sau 6 tháng, điểm chưa sử dụng sẽ hết hạn.
+- Điểm không thể chuyển nhượng cho người dùng khác.
+- Điểm không thể quy đổi trực tiếp thành tiền mặt trong ví.

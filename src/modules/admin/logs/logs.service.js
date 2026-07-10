@@ -10,6 +10,10 @@
 const logsRepository = require('./logs.repository');
 
 const logsService = {
+    listAuditLogs: async (query) => {
+        return logsRepository.listAuditLogs(query);
+    },
+    
     getApiLogs: async (query) => {
         return logsRepository.getApiLogs(query);
     },
@@ -20,6 +24,10 @@ const logsService = {
     
     getPaymentTraces: async (query) => {
         return logsRepository.getPaymentTraces(query);
+    },
+    
+    getWebhookLogs: async (query) => {
+        return logsRepository.getWebhookLogs(query);
     }
 };
 

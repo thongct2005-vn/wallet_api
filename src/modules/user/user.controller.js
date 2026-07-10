@@ -70,6 +70,9 @@ const userController = {
             res.status(200).json({ message: 'Mã xác thực đã được gửi đến email của bạn' });
         } catch (error) {
             console.error("Lỗi yêu cầu gửi OTP email:", error);
+            if (error.message.includes('đã được sử dụng')) {
+                return res.status(400).json({ error: error.message });
+            }
             res.status(500).json({ error: 'Không thể gửi email OTP' });
         }
     },

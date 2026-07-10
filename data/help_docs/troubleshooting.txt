@@ -1,0 +1,10 @@
+Chủ đề: Cách xử lý lỗi không nhận được mã xác thực OTP khi giao dịch hoặc đăng nhập.
+Từ khóa phụ: Lỗi OTP, không thấy tin nhắn OTP, không có mã xác nhận.
+
+Nếu người dùng không nhận được mã OTP, hãy hướng dẫn họ kiểm tra các nguyên nhân sau:
+1. Kiểm tra lại tín hiệu sóng điện thoại xem có đang ở vùng phủ sóng yếu không.
+2. Kiểm tra xem điện thoại có đang bật chế độ chặn tin nhắn từ người lạ hoặc tin nhắn quảng cáo (Spam SMS) không.
+3. Đảm bảo số điện thoại đang sử dụng chính xác là số điện thoại đã đăng ký với ví Mio247.
+4. Chờ 60 giây và nhấn nút "Gửi lại mã OTP" trên màn hình ứng dụng.
+5. Nếu vẫn không nhận được qua SMS, người dùng có thể chọn phương thức "Nhận mã OTP qua cuộc gọi thoại".
+6. Nếu thử mọi cách vẫn thất bại, vui lòng liên hệ tổng đài CSKH 1900 xxxx để được hỗ trợ.

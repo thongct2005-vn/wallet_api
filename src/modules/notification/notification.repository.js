@@ -25,16 +25,13 @@ const notificationRepository = {
      * @param {string} deviceType - ANDROID, IOS, or WEB
      */
     upsertDeviceToken: async (userId, fcmToken, deviceName, deviceType) => {
+        // Xóa token cũ của user này, đồng thời xóa luôn token này nếu nó đang được gắn với user khác (do 1 thiết bị đăng nhập 2 tài khoản)
+        await pool.query('DELETE FROM user_devices WHERE user_id = $1 OR fcm_token = $2', [userId, fcmToken]);
+
         const newId = uuidv7();
         const query = `
             INSERT INTO user_devices (id, user_id, fcm_token, device_name, device_type, updated_at)
             VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
-            ON CONFLICT (fcm_token) 
-            DO UPDATE SET 
-                user_id = EXCLUDED.user_id,
-                device_name = COALESCE(EXCLUDED.device_name, user_devices.device_name),
-                device_type = COALESCE(EXCLUDED.device_type, user_devices.device_type),
-                updated_at = CURRENT_TIMESTAMP
             RETURNING *
         `;
         const result = await pool.query(query, [newId, userId, fcmToken, deviceName, deviceType]);

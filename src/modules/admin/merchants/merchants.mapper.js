@@ -6,6 +6,10 @@ const mapMerchantRow = (row) => ({
     email: row.email,
     phone: row.phone,
     status: row.status,
+    has_api_key: row.has_api_key,
+    default_callback_url: row.default_callback_url,
+    webhook_configured: !!row.default_callback_url,
+    callback_enabled: row.callback_enabled,
     created_at: row.created_at
 });
 

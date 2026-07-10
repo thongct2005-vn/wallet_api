@@ -299,7 +299,7 @@ Admin quản lý danh sách tài khoản user trong hệ thống.
 | BR-01 | Admin không được sửa trực tiếp số dư ví |
 | BR-02 | Khóa user có thể kéo theo khóa ví nếu cấu hình |
 | BR-03 | Mở user không tự động mở ví nếu ví bị khóa bởi fraud/risk |
-| BR-04 | Reset mật khẩu phải revoke token cũ |
+| BR-04 | Reset mật khẩu bởi Admin phải tự động sinh mã PIN tạm (6 số), revoke token cũ và yêu cầu bắt buộc đổi mật khẩu ở lần đăng nhập tiếp theo. |
 | BR-05 | Mọi thao tác quản trị user phải ghi audit log |
 
 ---

@@ -4,22 +4,38 @@ const redis = require('../config/redis');
 
 const withIdempotency = async (req, res, next) => {
     const idempotencyKey = req.headers['idempotency-key'];
+    // [SECURITY FIX] Bắt buộc Idempotency-Key cho giao dịch tài chính — chống duplicate transactions
     if (!idempotencyKey) {
-        return next();
+        return res.status(400).json({
+            success: false,
+            error_code: 'IDEMPOTENCY_KEY_REQUIRED',
+            message: 'Thiếu header Idempotency-Key. Mỗi giao dịch tài chính cần có mã duy nhất để chống trùng lặp.'
+        });
     }
     try {
         const existingRecord = await idempotencyRepo.findByKey(idempotencyKey);
         if (existingRecord) {
+            const currentHash = crypto.createHash('sha256').update(JSON.stringify(req.body || {})).digest('hex');
+            if (existingRecord.request_hash && existingRecord.request_hash !== currentHash) {
+                return res.status(409).json({
+                    success: false,
+                    error_code: 'IDEMPOTENCY_PAYLOAD_MISMATCH',
+                    message: 'Idempotency Key đã được sử dụng với một nội dung Payload khác. Vui lòng tạo Key mới.'
+                });
+            }
             return res.status(200).json(existingRecord.response_data);
         }
 
         // Lock bằng Redis (Chống Concurrency 100 requests cùng lúc)
-        const lockKey = `idempotency_lock:${idempotencyKey}`;
-        const acquired = await redis.setnx(lockKey, 'locked');
-        if (!acquired) {
-            return res.status(409).json({ message: 'Giao dịch đang được xử lý, vui lòng không lặp lại yêu cầu.' });
+        let lockKey = null;
+        if (redis.status === 'ready') {
+            lockKey = `idempotency_lock:${idempotencyKey}`;
+            const acquired = await redis.setnx(lockKey, 'locked');
+            if (!acquired) {
+                return res.status(409).json({ message: 'Giao dịch đang được xử lý, vui lòng không lặp lại yêu cầu.' });
+            }
+            await redis.expire(lockKey, 30);
         }
-        await redis.expire(lockKey, 30);
 
         const originalJson = res.json;
         res.json = function (body) {
@@ -38,7 +54,9 @@ const withIdempotency = async (req, res, next) => {
                 idempotencyRepo.saveKey(idempotencyKey, requestHash, body, actorId, actorType, requestPath)
                     .catch(err => console.error('Lỗi lưu Idempotency Key:', err));
             }
-            redis.del(lockKey).catch(() => {});
+            if (lockKey && redis.status === 'ready') {
+                redis.del(lockKey).catch(() => { });
+            }
             return originalJson.call(this, body);
         };
         next();

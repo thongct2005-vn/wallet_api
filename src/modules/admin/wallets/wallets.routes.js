@@ -158,6 +158,6 @@ router.get('/:id', requirePermission('admin.wallets.read'), walletsValidator.val
 router.get('/:id/summary', requirePermission('admin.wallets.read'), walletsValidator.validateIdParam, walletsController.getWalletSummary);
 router.get('/:id/ledger', requirePermission('admin.wallets.read'), walletsValidator.validateIdParam, walletsController.getWalletLedger);
 router.post('/:id/actions/lock', requirePermission('admin.wallets.lock'), walletsValidator.validateIdParam, walletsValidator.validateReason, walletsController.lockWallet);
-router.post('/:id/actions/unlock', requirePermission('admin.wallets.lock'), walletsValidator.validateIdParam, walletsValidator.validateReason, walletsController.unlockWallet);
+router.post('/:id/actions/unlock', requirePermission('admin.wallets.lock'), walletsValidator.validateIdParam, walletsController.unlockWallet);
 
 module.exports = router;

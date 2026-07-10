@@ -1,18 +1,34 @@
-/**
- * Admin Webhooks Service
- * 
- * Cần implement:
- * - listWebhooks
- * - getWebhookDetail
- * - retryWebhook
- * - runRetryDueJob
- */
 const webhooksRepository = require('./webhooks.repository');
-const { ensureWriteAccess } = require('../_shared/admin-permission');
-const { ensureUuid } = require('../_shared/admin-validator');
 
-const webhooksService = {
-    // TODO: Implement webhook service logic
+const mapWebhook = (w) => {
+    if (!w) return w;
+    return {
+        ...w,
+        id: w._id || w.id,
+        url: w.callback_url || w.url,
+        retry_count: w.attempt_no || w.retry_count,
+        last_attempt_at: w.sent_at || w.last_attempt_at,
+        response_status_code: w.http_status || w.response_status_code
+    };
 };
 
-module.exports = webhooksService;
+const adminWebhooksService = {
+    listWebhooks: async (page = 1, limit = 20, status, merchantId) => {
+        const { items, total } = await webhooksRepository.listWebhooks(page, limit, status, merchantId);
+
+        return {
+            items: items.map(mapWebhook),
+            total,
+            page,
+            limit,
+            total_pages: Math.ceil(total / limit)
+        };
+    },
+
+    getWebhookDetail: async (id) => {
+        const webhook = await webhooksRepository.getWebhookDetail(id);
+        return mapWebhook(webhook);
+    }
+};
+
+module.exports = adminWebhooksService;

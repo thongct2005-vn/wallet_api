@@ -43,7 +43,7 @@ const authController = {
                 });
             }
             const data = await authService.login({
-                loginId: req.body.login_id,
+                loginId: req.body.username || req.body.login_id,
                 password: req.body.password,
                 rememberMe: Boolean(req.body.remember_me),
                 ...requestMeta(req)
@@ -115,15 +115,23 @@ const authController = {
 
     changePassword: async (req, res, next) => {
         try {
+            console.log('[DEBUG] req.body in changePassword:', req.body);
+            const currentPassword = req.body.current_password || req.body.currentPassword || req.body.old_password || req.body.oldPassword;
+            const newPassword = req.body.new_password || req.body.newPassword;
+            const confirmNewPassword = req.body.confirm_new_password || req.body.confirm_password || req.body.confirmNewPassword || req.body.confirmPassword || newPassword;
+
+            console.log('[DEBUG] parsed:', { currentPassword, newPassword, confirmNewPassword });
+
             await authService.changePassword({
                 userId: req.user.userId,
-                currentPassword: req.body.current_password,
-                newPassword: req.body.new_password,
-                confirmNewPassword: req.body.confirm_new_password,
+                currentPassword,
+                newPassword,
+                confirmNewPassword,
                 ...requestMeta(req)
             });
             return success(req, res, 200, 'Password changed');
         } catch (error) {
+            console.error('[DEBUG] error in changePassword:', error.message);
             return next(error);
         }
     },
@@ -252,6 +260,61 @@ const authController = {
         } catch (error) {
             if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
                 return res.status(401).json({ error: 'Token đăng ký không hợp lệ hoặc đã hết hạn' });
+            }
+            return next(error);
+        }
+    },
+
+    verifyPhone: async (req, res, next) => {
+        try {
+            if (!req.body.phone || !req.body.code) {
+                return res.status(400).json({ error: 'Vui lòng cung cấp phone và code' });
+            }
+            const verifyToken = await authService.verifyPhoneOTP(req.body.phone, req.body.code);
+            return res.status(200).json({
+                message: 'Xác thực số điện thoại thành công',
+                verify_token: verifyToken
+            });
+        } catch (error) {
+            if (error.message === 'User_Not_Found') {
+                return res.status(404).json({ error: 'Tài khoản không tồn tại' });
+            }
+            if (error.message === 'VERIFY_CODE_INVALID' || error.message === 'OTP_INVALID') {
+                return res.status(400).json({ error: 'Mã xác thực không chính xác' });
+            }
+            if (error.message === 'TWILIO_VERIFY_ERROR') {
+                return res.status(400).json({ error: 'Lỗi xác thực từ hệ thống' });
+            }
+            return next(error);
+        }
+    },
+
+    setPasswordAfterVerify: async (req, res, next) => {
+        try {
+            const authHeader = req.headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) {
+                return res.status(401).json({ error: 'Thiếu hoặc sai định dạng token xác thực' });
+            }
+            const verifyToken = authHeader.split(' ')[1];
+            
+            if (!req.body.new_password || !req.body.confirm_password) {
+                return res.status(400).json({ error: 'Vui lòng nhập mật khẩu mới' });
+            }
+
+            await authService.setPasswordAfterVerify(verifyToken, req.body.new_password, req.body.confirm_password);
+            return res.status(200).json({ message: 'Thiết lập mật khẩu thành công' });
+        } catch (error) {
+            if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError' || error.message === 'Invalid_Verify_Token') {
+                return res.status(401).json({ error: 'Token xác thực không hợp lệ hoặc đã hết hạn' });
+            }
+            if (error.message === 'Validation_Error') {
+                return res.status(400).json({ error: 'Mật khẩu xác nhận không khớp' });
+            }
+            if (error.message === 'PIN_Policy_Invalid') {
+                return res.status(400).json({ error: 'Mật khẩu phải là đúng 6 chữ số' });
+            }
+            if (error.message === 'User_Not_Found') {
+                return res.status(404).json({ error: 'Tài khoản không tồn tại' });
             }
             return next(error);
         }

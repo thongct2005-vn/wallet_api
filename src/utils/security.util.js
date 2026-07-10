@@ -27,7 +27,14 @@ async function verifyTransactionSecurity(amount, pin, faceImagePath, wallet, use
             }
         }
         if (!wallet.pin_hash) throw new Error('Wallet_Not_Found');
-        const isPinMatch = await bcrypt.compare(pin, wallet.pin_hash);
+        
+        const pepper = process.env.PIN_PEPPER || '';
+        let isPinMatch = await bcrypt.compare(pin + pepper, wallet.pin_hash);
+        if (!isPinMatch && pepper !== '') {
+            // Hỗ trợ tương thích ngược cho các ví cũ chưa có pepper
+            isPinMatch = await bcrypt.compare(pin, wallet.pin_hash);
+        }
+
         if (!isPinMatch) {
             const newAttempts = (wallet.pin_failed_attempts || 0) + 1;
             if (newAttempts >= 3) {

@@ -16,6 +16,7 @@ function sanitizeUserInput(payload = {}) {
         userType: payload.user_type || 'USER',
         status: payload.status || 'ACTIVE',
         roleCode: payload.role_code || payload.user_type || 'USER',
+        roleCodes: payload.role_codes || payload.roleCodes,
         createWallet: payload.create_wallet !== false // Mặc định là true nếu không truyền
     };
 }

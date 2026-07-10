@@ -1,0 +1,29 @@
+Chủ đề: Hướng dẫn sử dụng tính năng Nhắn tin và Lì xì trong ví Mio247.
+Từ khóa phụ: Nhắn tin, chat, tin nhắn, lì xì, bao lì xì, red packet, gửi lì xì, nhận lì xì, trò chuyện.
+
+--- TÍNH NĂNG NHẮN TIN ---
+Ví Mio247 tích hợp tính năng nhắn tin (chat) giúp bạn trò chuyện trực tiếp với bạn bè trong hệ thống ví.
+
+Hướng dẫn nhắn tin:
+Bước 1: Tại trang chủ, chọn biểu tượng "Tin nhắn" hoặc "Chat".
+Bước 2: Chọn người bạn muốn nhắn tin từ danh sách cuộc trò chuyện, hoặc tạo cuộc trò chuyện mới bằng cách tìm kiếm số điện thoại.
+Bước 3: Nhập nội dung tin nhắn và nhấn gửi.
+Lưu ý: Tin nhắn được gửi theo thời gian thực (real-time). Cả hai bên sẽ nhận được tin nhắn ngay lập tức nếu đang online. Nếu người nhận offline, họ sẽ nhận được thông báo push.
+
+--- TÍNH NĂNG LÌ XÌ (RED PACKET) ---
+Bạn có thể gửi bao lì xì điện tử cho bạn bè ngay trong cuộc trò chuyện:
+
+Hướng dẫn gửi lì xì:
+Bước 1: Mở cuộc trò chuyện với người bạn muốn gửi lì xì.
+Bước 2: Nhấn vào biểu tượng "Lì xì" hoặc "Bao lì xì" (biểu tượng 🧧).
+Bước 3: Nhập số tiền lì xì muốn gửi.
+Bước 4: Thêm lời chúc (không bắt buộc, ví dụ: "Chúc mừng năm mới!").
+Bước 5: Xác nhận bằng mã PIN ví.
+Bước 6: Bao lì xì sẽ hiển thị trong cuộc trò chuyện. Người nhận chỉ cần nhấn vào để mở và nhận tiền.
+
+Hướng dẫn nhận lì xì:
+Bước 1: Khi nhận được bao lì xì trong cuộc trò chuyện, bạn sẽ thấy một tin nhắn đặc biệt có biểu tượng bao lì xì.
+Bước 2: Nhấn vào bao lì xì để mở.
+Bước 3: Tiền lì xì sẽ được cộng trực tiếp vào số dư ví của bạn.
+
+Lưu ý: Mỗi bao lì xì chỉ có thể được mở 1 lần. Bao lì xì có thời hạn, nếu không mở trong vòng 24 giờ, tiền sẽ tự động hoàn trả về ví người gửi.

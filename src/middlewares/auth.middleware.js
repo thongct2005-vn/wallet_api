@@ -22,7 +22,7 @@ const authenticateJwt = async (req, res, next) => {
         }
         const userId = decoded.sub || decoded.userId || decoded.id;
         const result = await pool.query(`
-            SELECT id, user_type, status, token_version
+            SELECT id, user_type, status, token_version, is_force_change_password
             FROM users
             WHERE id = $1
         `, [userId]);
@@ -31,6 +31,21 @@ const authenticateJwt = async (req, res, next) => {
         if (['LOCKED', 'BLOCKED', 'INACTIVE'].includes(user.status)) {
             return forbidden(res, 'Tài khoản đã bị khóa hoặc chưa kích hoạt');
         }
+        
+        if (user.is_force_change_password) {
+            const isAllowed = 
+                (req.method === 'GET' && req.originalUrl.includes('/auth/me')) ||
+                (req.method === 'POST' && req.originalUrl.includes('/auth/change-password')) ||
+                (req.method === 'POST' && req.originalUrl.includes('/auth/logout'));
+            if (!isAllowed) {
+                return res.status(403).json({
+                    success: false,
+                    error_code: 'FORCE_CHANGE_PASSWORD',
+                    message: 'Bạn phải đổi mật khẩu trước khi tiếp tục sử dụng hệ thống'
+                });
+            }
+        }
+
         if (Number(decoded.tokenVersion) !== Number(user.token_version)) {
             return unauthorized(res, 'TOKEN_REVOKED', 'Token đã bị thu hồi');
         }

@@ -2,20 +2,9 @@ const express = require('express');
 const router = express.Router();
 const transactionController = require('./transaction.controller');
 const verifyToken = require('../../middlewares/auth.middleware');
-const multer = require('multer');
-const path = require('path');
 
-// Configure Multer to store uploaded temp files in uploads/ keeping the file extension
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-const upload = multer({ storage: storage });
+// Sử dụng cấu hình Multer tập trung (có fileFilter + limits bảo mật)
+const upload = require('../../config/multer');
 
 const withIdempotency = require('../../middlewares/idempotency.middleware');
 

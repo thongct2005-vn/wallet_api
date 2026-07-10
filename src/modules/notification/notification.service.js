@@ -241,6 +241,58 @@ const notificationService = {
             console.error('Error sending chat push notification:', error);
             return { success: false, error: error.message };
         }
+    },
+
+    /**
+     * Send general system notification (e.g. link success, security alerts)
+     */
+    sendSystemNotification: async (userId, title, body, type = 'SYSTEM', referenceId = null) => {
+        const activeTokens = await notificationRepository.getActiveTokensByUserId(userId);
+
+        const notificationRecord = await notificationRepository.createNotification(
+            userId,
+            title,
+            body,
+            type,
+            referenceId
+        );
+
+        if (!activeTokens || activeTokens.length === 0) {
+            return { success: true, sentDevices: 0, notification: notificationRecord };
+        }
+
+        const fcmPayload = {
+            tokens: activeTokens,
+            notification: {
+                title: title,
+                body: body,
+            },
+            data: {
+                click_action: 'FLUTTER_NOTIFICATION_CLICK',
+                type: type,
+                referenceId: referenceId ? String(referenceId) : '',
+                timestamp: String(Date.now()),
+            },
+            android: {
+                priority: 'high',
+                notification: {
+                    channelId: 'wallet_balance_channel_id',
+                    sound: 'default'
+                }
+            },
+            apns: {
+                headers: { 'apns-priority': '10' },
+                payload: { aps: { sound: 'default', badge: 1 } }
+            }
+        };
+
+        try {
+            const response = await admin.messaging().sendEachForMulticast(fcmPayload);
+            return { success: true, sentDevices: response.successCount };
+        } catch (error) {
+            console.error('Error sending system push notification:', error);
+            return { success: false, error: error.message };
+        }
     }
 };
 

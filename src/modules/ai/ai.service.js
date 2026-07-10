@@ -86,25 +86,40 @@ const aiService = {
     },
 
     chatWithAssistant: async (message, walletId) => {
-        let historyText = "Chưa có giao dịch nào.";
+        let recentHistoryText = "Chưa có giao dịch gần đây.";
+        let monthlySummaryText = "Chưa có dữ liệu thống kê.";
+
         if (walletId) {
+            // Lấy 50 giao dịch gần nhất
             const history = await transactionRepo.getTransactionHistoryForAI(walletId);
             if (history && history.length > 0) {
-                historyText = history.map(h => {
-                    let text = `- Ngày: ${new Date(h.created_at).toLocaleString()}, Biến động: ${h.entry_type === 'CREDIT' ? '+' : '-'}${h.amount}, Loại: ${h.transaction_type}`;
-                    if (h.sender_name) text += `, Người gửi: ${h.sender_name}`;
-                    if (h.receiver_name) text += `, Người nhận: ${h.receiver_name}`;
-                    text += `, Nội dung: ${h.transfer_note || h.description || ''}, Phân loại: ${h.category_name || 'Khác'}`;
+                recentHistoryText = history.map(h => {
+                    let text = `- Ngày: ${new Date(h.created_at).toLocaleString('vi-VN')}, Biến động: ${h.entry_type === 'CREDIT' ? '+' : '-'}${h.amount}, Loại: ${h.transaction_type}`;
+                    if (h.sender_name) text += `, Gửi: ${h.sender_name}`;
+                    if (h.receiver_name) text += `, Nhận: ${h.receiver_name}`;
+                    text += `, Phân loại: ${h.category_name || 'Khác'}`;
                     return text;
+                }).join('\n');
+            }
+
+            // Lấy thống kê 6 tháng gần nhất
+            const summary = await transactionRepo.getMonthlySummaryForAI(walletId);
+            if (summary && summary.length > 0) {
+                monthlySummaryText = summary.map(s => {
+                    return `- Tháng ${s.month}: ${s.entry_type === 'CREDIT' ? 'Thu' : 'Chi'} ${s.total_amount}đ cho danh mục '${s.category_name}'`;
                 }).join('\n');
             }
         }
 
         const model = genAI.getGenerativeModel({ model: MODEL_NAME });
         const prompt = `Bạn là "Mio 247" - Trợ lý Tài chính AI thân thiện của Ví điện tử.
-        Bạn hãy xưng hô là "Mio 247" và gọi người dùng là "Bạn". Trả lời ngắn gọn, vui vẻ, súc tích và hữu ích.
-        Dưới đây là lịch sử các giao dịch trong 1 năm gần nhất của người dùng:
-        ${historyText}
+        Hãy xưng hô là "Mio 247" và gọi người dùng là "Bạn". Trả lời ngắn gọn, súc tích và tư vấn tài chính hữu ích.
+        
+        BÁO CÁO THU CHI THEO THÁNG (6 tháng gần nhất):
+        ${monthlySummaryText}
+        
+        CHI TIẾT 50 GIAO DỊCH GẦN NHẤT:
+        ${recentHistoryText}
         
         Câu hỏi của người dùng: "${message}"`;
 

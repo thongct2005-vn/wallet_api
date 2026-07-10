@@ -75,9 +75,10 @@ const authRepository = {
         const result = await pool.query(`
             SELECT id, user_type, full_name, username, email, phone, password_hash,
                    status, failed_login_attempts, locked_until, last_login_at,
-                   is_kyc_verified, token_version, created_at, updated_at
+                   is_kyc_verified, token_version, created_at, updated_at,
+                   is_force_change_password, temporary_password_expires_at
             FROM users
-            WHERE username = $1 OR email = $1 OR phone = $1
+            WHERE username = $1 OR LOWER(email) = LOWER($1) OR phone = $1
             LIMIT 1
         `, [loginId]);
         return result.rows[0];
@@ -87,7 +88,8 @@ const authRepository = {
         const result = await pool.query(`
             SELECT id, user_type, full_name, username, email, phone, password_hash,
                    status, failed_login_attempts, locked_until, last_login_at,
-                   is_kyc_verified, token_version, created_at, updated_at
+                   is_kyc_verified, token_version, created_at, updated_at,
+                   is_force_change_password, temporary_password_expires_at
             FROM users
             WHERE id = $1
         `, [userId]);
@@ -266,9 +268,24 @@ const authRepository = {
             UPDATE users
             SET password_hash = $2,
                 token_version = token_version + 1,
-                updated_at = CURRENT_TIMESTAMP
+                updated_at = CURRENT_TIMESTAMP,
+                is_force_change_password = false,
+                temporary_password_expires_at = NULL,
+                password_changed_at = CURRENT_TIMESTAMP
             WHERE id = $1
         `, [userId, passwordHash]);
+    },
+
+    forceResetPassword: async (client, userId, passwordHash, expiresAt) => {
+        await client.query(`
+            UPDATE users
+            SET password_hash = $2,
+                token_version = token_version + 1,
+                updated_at = CURRENT_TIMESTAMP,
+                is_force_change_password = true,
+                temporary_password_expires_at = $3
+            WHERE id = $1
+        `, [userId, passwordHash, expiresAt]);
     }
 };
 

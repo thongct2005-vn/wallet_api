@@ -109,11 +109,11 @@
  *           example: Password@123
  *     LoginRequest:
  *       type: object
- *       required: [login_id, password]
+ *       required: [username, password]
  *       properties:
- *         login_id:
+ *         username:
  *           type: string
- *           description: Username, email hoac so dien thoai
+ *           description: Tên đăng nhập, email hoặc số điện thoại
  *           example: "0900000001"
  *         password:
  *           type: string
@@ -713,4 +713,57 @@
  *     responses:
  *       200:
  *         description: Yeu cau reset duoc tiep nhan
+ *
+ * /api/v1/auth/verify-phone:
+ *   post:
+ *     summary: Xac thuc OTP Twilio Verify
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 example: "+84862087409"
+ *               code:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: Xac thuc thanh cong
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 verify_token:
+ *                   type: string
+ *
+ * /api/v1/auth/set-password-after-verify:
+ *   post:
+ *     summary: Thiet lap mat khau sau khi verify OTP
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               new_password:
+ *                 type: string
+ *                 example: "123456"
+ *               confirm_password:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: Thiet lap mat khau thanh cong
  */

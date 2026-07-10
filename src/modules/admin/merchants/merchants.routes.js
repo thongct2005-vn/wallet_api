@@ -60,17 +60,28 @@ const merchantsValidator = require('./merchants.validator');
  *         application/json:
  *           schema:
  *             type: object
- *             required: [merchant_code, merchant_name, phone, email]
+ *             required: [merchant_name, business_type, owner_info]
  *             properties:
- *               merchant_code: { type: string }
- *               merchant_name: { type: string }
- *               phone: { type: string }
- *               email: { type: string }
+ *               merchant_name: { type: string, example: "Công Ty TNHH Lập Trình AI" }
+ *               business_type: { type: string, enum: [ONLINE, OFFLINE, BOTH], example: "ONLINE" }
+ *               representative_name: { type: string, example: "Lê Văn Thông" }
+ *               tax_code: { type: string, example: "0312345678" }
+ *               phone: { type: string, example: "02873001111" }
+ *               email: { type: string, example: "contact@laptrinh-ai.com" }
+ *               address: { type: string, example: "Tòa nhà Bitexco, Quận 1, TP.HCM" }
+ *               owner_info:
+ *                 type: object
+ *                 required: [full_name, username, phone, email]
+ *                 properties:
+ *                   full_name: { type: string, example: "Lê Văn Thông" }
+ *                   username: { type: string, example: "thong_ai" }
+ *                   phone: { type: string, example: "0987654111" }
+ *                   email: { type: string, example: "contact@laptrinh-ai.com" }
  *               callback:
  *                 type: object
  *                 properties:
- *                   default_callback_url: { type: string }
- *                   default_redirect_url: { type: string }
+ *                   default_callback_url: { type: string, example: "https://laptrinh-ai.com/api/webhook" }
+ *                   default_redirect_url: { type: string, example: "https://laptrinh-ai.com/payment/success" }
  *     responses:
  *       201:
  *         description: Merchant created

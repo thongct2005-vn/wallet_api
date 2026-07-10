@@ -1,0 +1,40 @@
+Chủ đề: Hướng dẫn quản lý hồ sơ cá nhân và cài đặt ứng dụng trên ví Mio247.
+Từ khóa phụ: Hồ sơ, thông tin cá nhân, đổi tên, đổi avatar, cài đặt, ngôn ngữ, thay đổi ngôn ngữ, đổi mật khẩu, cài đặt thông báo, xóa tài khoản.
+
+--- XEM VÀ CHỈNH SỬA HỒ SƠ CÁ NHÂN ---
+Bước 1: Mở ứng dụng Mio247 và đăng nhập.
+Bước 2: Nhấn vào biểu tượng "Tài khoản" hoặc "Hồ sơ" ở thanh điều hướng phía dưới màn hình.
+Bước 3: Tại đây bạn có thể xem:
+  - Tên hiển thị
+  - Số điện thoại đăng ký
+  - Mã ví (Wallet Code) dùng để nhận tiền
+  - Trạng thái xác minh KYC
+  - Ảnh đại diện (Avatar)
+
+--- ĐỔI MẬT KHẨU ---
+Bước 1: Vào phần "Hồ sơ" hoặc "Cài đặt".
+Bước 2: Chọn "Đổi mật khẩu" hoặc "Thay đổi mật khẩu".
+Bước 3: Nhập mật khẩu cũ (6 số).
+Bước 4: Nhập mật khẩu mới (6 số). Mật khẩu mới không được trùng với mật khẩu cũ.
+Bước 5: Xác nhận mật khẩu mới.
+Bước 6: Hệ thống thông báo đổi mật khẩu thành công.
+
+--- CÀI ĐẶT NGÔN NGỮ ---
+Mio247 hỗ trợ 2 ngôn ngữ: Tiếng Việt và Tiếng Anh.
+Bước 1: Vào phần "Cài đặt" (Settings).
+Bước 2: Chọn "Ngôn ngữ" (Language).
+Bước 3: Chọn ngôn ngữ mong muốn: Tiếng Việt (VIE) hoặc English (ENG).
+Bước 4: Giao diện ứng dụng sẽ tự động chuyển sang ngôn ngữ đã chọn.
+
+--- ĐĂNG XUẤT ---
+Bước 1: Vào phần "Hồ sơ" hoặc "Cài đặt".
+Bước 2: Cuộn xuống dưới cùng và chọn "Đăng xuất".
+Bước 3: Xác nhận đăng xuất. Bạn sẽ được chuyển về màn hình đăng nhập.
+Lưu ý: Sau khi đăng xuất, bạn cần đăng nhập lại bằng số điện thoại và mật khẩu để sử dụng ứng dụng.
+
+--- CÀI ĐẶT THÔNG BÁO ---
+Bạn có thể tùy chỉnh việc nhận thông báo:
+- Thông báo giao dịch: Nhận thông báo khi có nạp/rút/chuyển tiền.
+- Thông báo tin nhắn: Nhận thông báo khi có tin nhắn mới.
+- Thông báo khuyến mãi: Nhận thông báo về ưu đãi và khuyến mãi.
+Để tắt/bật thông báo, vào phần "Cài đặt" → "Thông báo" và chọn loại thông báo muốn quản lý.

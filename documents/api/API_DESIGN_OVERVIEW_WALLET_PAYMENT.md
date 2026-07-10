@@ -160,13 +160,13 @@ Phase 1 gồm các nhóm:
 | Method | Endpoint | Mô tả | Auth |
 |---|---|---|---|
 | GET | `/admin/users` | Admin xem danh sách user | Admin |
-| POST | `/admin/customers` | Admin tạo khách hàng (tự động cấp ví) | Admin |
-| POST | `/admin/staffs` | Admin tạo nhân viên (không có ví, phân quyền RBAC) | Admin |
+| POST | `/admin/users` | Admin tạo người dùng ví (tự động cấp ví, trả mật khẩu tạm 6 số, ép đổi MK) | Admin |
+| POST | `/admin/staffs` | Admin tạo nhân viên (không có ví, phân quyền RBAC, trả mật khẩu tạm 6 số, ép đổi MK) | Admin |
 | GET | `/admin/users/{id}` | Admin xem chi tiết user | Admin |
 | PATCH | `/admin/users/{id}` | Admin cập nhật user | Admin |
 | POST | `/admin/users/{id}/actions/lock` | Khóa user | Admin |
 | POST | `/admin/users/{id}/actions/unlock` | Mở khóa user | Admin |
-| POST | `/admin/users/{id}/actions/reset-password` | Reset password | Admin |
+| POST | `/admin/users/{id}/actions/reset-password` | Reset password (trả mật khẩu tạm 6 số, ép đổi MK) | Admin |
 
 ### Roles/Permissions
 

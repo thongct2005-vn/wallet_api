@@ -5,7 +5,7 @@ const transactionRepo = require('../transaction/transaction.repository');
 const walletService = {
     getWalletInfo: async (userId) => {
         const wallet = await walletRepository.getBalanceByUserId(userId);
-        
+
         if (!wallet) {
             throw new Error('Wallet_Not_Found');
         }
@@ -27,7 +27,11 @@ const walletService = {
             throw new Error('Pin_Not_Set');
         }
 
-        const isValid = await bcrypt.compare(pin, wallet.pin_hash);
+        const pepper = process.env.PIN_PEPPER || '';
+        let isValid = await bcrypt.compare(pin + pepper, wallet.pin_hash);
+        if (!isValid && pepper !== '') {
+            isValid = await bcrypt.compare(pin, wallet.pin_hash);
+        }
         return isValid;
     },
 
@@ -55,25 +59,27 @@ const walletService = {
     setWalletCode: async (userId, pinCode) => {
         try {
             const saltRounds = 10;
-            const pinHash = await bcrypt.hash(pinCode, saltRounds);
-            
+            const pepper = process.env.PIN_PEPPER || '';
+            const pinHash = await bcrypt.hash(pinCode + pepper, saltRounds);
+
             const result = await walletRepository.updatePinHash(userId, pinHash);
-            
+
             // Unlock wallet if it was locked
             const txRepo = require('../transaction/transaction.repository');
             const wallet = await txRepo.getWalletByUserId(userId);
             if (wallet) {
                 await txRepo.resetPinAttempts(wallet.id);
             }
-            
+
             if (!result) {
                 throw new Error('Wallet_Not_Found');
             }
-            
-            return pinCode;
+
+            // [SECURITY FIX] Không trả về PIN gốc (plaintext) trong response
+            return true;
 
         } catch (error) {
-            throw error; 
+            throw error;
         }
     },
 
@@ -132,10 +138,14 @@ const walletService = {
             throw new Error('PIN_Not_Set');
         }
 
-        const isPinMatch = await bcrypt.compare(pin, wallet.pin_hash);
+        const pepper = process.env.PIN_PEPPER || '';
+        let isPinMatch = await bcrypt.compare(pin + pepper, wallet.pin_hash);
+        if (!isPinMatch && pepper !== '') {
+            isPinMatch = await bcrypt.compare(pin, wallet.pin_hash);
+        }
         if (!isPinMatch) {
             const newAttempts = (wallet.pin_failed_attempts || 0) + 1;
-            
+
             if (newAttempts >= 3) {
                 const lockTime = new Date(Date.now() + 30 * 60000);
                 await transactionRepo.updatePinAttempts(wallet.id, newAttempts, lockTime);
@@ -174,10 +184,14 @@ const walletService = {
             throw new Error('PIN_Not_Set');
         }
 
-        const isPinMatch = await bcrypt.compare(pin, wallet.pin_hash);
+        const pepper = process.env.PIN_PEPPER || '';
+        let isPinMatch = await bcrypt.compare(pin + pepper, wallet.pin_hash);
+        if (!isPinMatch && pepper !== '') {
+            isPinMatch = await bcrypt.compare(pin, wallet.pin_hash);
+        }
         if (!isPinMatch) {
             const newAttempts = (wallet.pin_failed_attempts || 0) + 1;
-            
+
             if (newAttempts >= 3) {
                 const lockTime = new Date(Date.now() + 30 * 60000);
                 await transactionRepo.updatePinAttempts(wallet.id, newAttempts, lockTime);

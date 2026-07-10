@@ -10,6 +10,16 @@
 const logsService = require('./logs.service');
 
 const logsController = {
+    listAuditLogs: async (req, res) => {
+        try {
+            const result = await logsService.listAuditLogs(req.query);
+            return res.status(200).json({ success: true, data: result });
+        } catch (err) {
+            console.error("Lỗi listAuditLogs:", err);
+            return res.status(500).json({ success: false, message: 'Lỗi lấy Audit Logs', error: err.message });
+        }
+    },
+
     getApiLogs: async (req, res) => {
         try {
             const result = await logsService.getApiLogs(req.query);
@@ -37,6 +47,16 @@ const logsController = {
         } catch (err) {
             console.error("Lỗi getPaymentTraces:", err);
             return res.status(500).json({ success: false, message: 'Lỗi lấy Payment Traces', error: err.message });
+        }
+    },
+
+    getWebhookLogs: async (req, res) => {
+        try {
+            const result = await logsService.getWebhookLogs(req.query);
+            return res.status(200).json({ success: true, data: result });
+        } catch (err) {
+            console.error("Lỗi getWebhookLogs:", err);
+            return res.status(500).json({ success: false, message: 'Lỗi lấy Webhook Logs', error: err.message });
         }
     }
 };

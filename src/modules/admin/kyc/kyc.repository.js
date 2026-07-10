@@ -4,7 +4,7 @@ const kycRepository = {
     getKycList: async (limit, offset, status) => {
         let query = `
             SELECT 
-                k.id, k.user_id, k.id_number, k.full_name, k.kyc_status, k.created_at, u.phone AS phone_number
+                k.*, u.phone AS phone_number
             FROM user_kyc k
             JOIN users u ON k.user_id = u.id
         `;

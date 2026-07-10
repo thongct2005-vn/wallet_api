@@ -10,7 +10,7 @@ Trong ngày làm việc hôm nay, chúng ta đã tái cấu trúc và xây dựn
 ## 2. Các Phân Hệ Chức Năng Đã Hoàn Thiện (32 Endpoints)
 
 ### 2.1. Phân hệ Admin Users & Wallets
-* **Admin Users (9 APIs):** Xử lý toàn bộ vòng đời của người dùng quản trị. Đã tích hợp các API như List, Create, Detail, Update, Reset Password. Các hành động thay đổi trạng thái (Lock/Unlock) bắt buộc phải truyền lý do (`reason`). Ngoài ra có API xem ví cá nhân của User và xem lịch sử Audit Log cá nhân.
+* **Admin Users (11 APIs):** Xử lý vòng đời người dùng. Đã tích hợp các API như List, Create (Wallet User/Staff), Detail, Update, Reset Password, và đặc biệt bổ sung luồng **Twilio Verify OTP** qua 2 API mới: `verify-phone` và `set-password-after-verify`. Nếu hệ thống bật `SMS_PROVIDER=TWILIO_VERIFY`, luồng tạo User sẽ gửi mã OTP thật thay vì mật khẩu tạm. Tích hợp luồng **Bắt buộc đổi mật khẩu (Force Change Password)**: hệ thống sẽ chặn mọi endpoint khác cho đến khi user xác thực và thiết lập mật khẩu thành công.
 * **Wallets (6 APIs):** Module tra cứu ví nội bộ. Cho phép tra cứu danh sách, chi tiết ví, xem Summary (tổng quan số dư), xuất sổ cái Ledger và thao tác Lock/Unlock ví.
 
 ### 2.2. Phân hệ Roles & Permissions

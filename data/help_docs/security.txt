@@ -1,0 +1,33 @@
+Chủ đề: Hướng dẫn bảo mật tài khoản ví điện tử Mio247.
+Từ khóa phụ: Bảo mật, an toàn, mã PIN, PIN ví, bị hack, bị lừa đảo, phiên đăng nhập, thiết bị khác, khóa tài khoản.
+
+--- MÃ PIN VÍ ---
+Mã PIN ví là mật khẩu 6 số dùng để xác nhận các giao dịch tài chính (chuyển tiền, nạp tiền, rút tiền, thanh toán).
+- Mã PIN được thiết lập khi bạn đăng ký tài khoản (chính là mật khẩu đăng nhập).
+- Bạn có thể đổi mã PIN bất cứ lúc nào trong phần "Cài đặt" → "Đổi mật khẩu".
+- KHÔNG bao giờ chia sẻ mã PIN với bất kỳ ai, kể cả nhân viên Mio247.
+
+--- BẢO MẬT PHIÊN ĐĂNG NHẬP ---
+Hệ thống Mio247 có cơ chế bảo mật phiên đăng nhập tự động:
+- Mỗi phiên đăng nhập có thời hạn. Khi hết hạn, hệ thống sẽ tự động gia hạn ngầm mà không làm gián đoạn trải nghiệm của bạn.
+- Nếu phát hiện tài khoản được đăng nhập trên một thiết bị khác, hệ thống sẽ tự động đăng xuất phiên cũ và hiển thị cảnh báo bảo mật.
+
+--- XỬ LÝ KHI NGHI NGỜ BỊ HACK ---
+Nếu bạn nghi ngờ tài khoản Mio247 bị truy cập trái phép:
+Bước 1: Đổi mật khẩu ngay lập tức qua tính năng "Quên mật khẩu" (yêu cầu xác thực khuôn mặt).
+Bước 2: Kiểm tra lịch sử giao dịch để xem có giao dịch bất thường nào không.
+Bước 3: Liên hệ tổng đài CSKH 1900 xxxx để yêu cầu tạm khóa tài khoản nếu cần.
+Bước 4: Không bao giờ nhấn vào các đường link lạ hoặc cung cấp mã OTP cho người khác.
+
+--- CẢNH BÁO LỪA ĐẢO ---
+Mio247 KHÔNG BAO GIỜ:
+- Gọi điện yêu cầu bạn cung cấp mã OTP, mật khẩu, hoặc mã PIN.
+- Gửi email/tin nhắn yêu cầu bạn đăng nhập qua đường link lạ.
+- Yêu cầu bạn chuyển tiền cho "nhân viên" để xác minh tài khoản.
+Nếu nhận được các yêu cầu như trên, đó là LỪA ĐẢO. Hãy bỏ qua và báo cáo cho chúng tôi.
+
+--- KHÓA TÀI KHOẢN TẠM THỜI ---
+Nếu nhập sai mật khẩu đăng nhập 5 lần liên tiếp, tài khoản sẽ bị tạm khóa 30 phút.
+Sau thời gian khóa, bạn có thể:
+- Đăng nhập lại bằng mật khẩu đúng.
+- Sử dụng "Quên mật khẩu" để đặt mật khẩu mới (yêu cầu xác thực khuôn mặt).

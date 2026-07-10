@@ -34,7 +34,7 @@ const auditLogger = (req, res, next) => {
                 const entityType = pathParts.length > 0 ? pathParts[0] : 'system';
                 
                 // Tìm entity_id từ request params hoặc body nếu có
-                const rawEntityId = req.params.id || req.body.id || req.body.wallet_id || req.body.userId || null;
+                const rawEntityId = req.params?.id || req.body?.id || req.body?.wallet_id || req.body?.userId || null;
                 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
                 const entityId = (rawEntityId && uuidRegex.test(rawEntityId)) ? rawEntityId : null;
                 

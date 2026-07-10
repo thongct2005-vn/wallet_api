@@ -24,6 +24,7 @@ function handleAdminError(res, err, logPrefix) {
         Invalid_Merchant_Id: [400, 'VALIDATION_ERROR', 'Merchant ID khong hop le'],
         Invalid_Key_Id: [400, 'VALIDATION_ERROR', 'API Key ID khong hop le'],
         Merchant_Not_Found: [404, 'MERCHANT_NOT_FOUND', 'Khong tim thay merchant'],
+        Merchant_Not_Active: [403, 'FORBIDDEN', 'Merchant chua duoc kich hoat hoac dang bi khoa'],
         Merchant_Already_Active: [409, 'CONFLICT', 'Merchant hien da o trang thai ACTIVE'],
         Merchant_Already_Rejected: [409, 'CONFLICT', 'Merchant hien da o trang thai REJECTED'],
         Merchant_Already_Suspended: [409, 'CONFLICT', 'Merchant hien da o trang thai SUSPENDED'],

@@ -153,6 +153,29 @@ const walletRepository = {
         const dailyTransactionUsage = await calcTxUsage('created_at >= CURRENT_DATE');
         const monthlyTransactionUsage = await calcTxUsage("created_at >= date_trunc('month', CURRENT_DATE)");
 
+        // Calculate Special Services (Topup + Lucky Money)
+        const topupRes = await pool.query(`
+            SELECT COALESCE(SUM(pt.amount), 0) as total
+            FROM payment_transactions pt
+            JOIN payment_orders po ON pt.payment_order_id = po.id
+            WHERE pt.payer_wallet_id = $1 AND pt.status = 'SUCCESS' 
+              AND pt.created_at >= date_trunc('month', CURRENT_DATE)
+              AND (po.description ILIKE '%nạp tiền điện thoại%' 
+                   OR po.description ILIKE '%mã thẻ%' 
+                   OR po.description ILIKE '%nạp gói data%')
+        `, [walletId]);
+        
+        const luckyMoneyRes = await pool.query(`
+            SELECT COALESCE(SUM(lt.amount), 0) as total
+            FROM ledger_transactions lt
+            JOIN ledger_entries le ON lt.id = le.ledger_transaction_id
+            WHERE le.wallet_id = $1 AND le.entry_type = 'DEBIT' 
+              AND lt.source_type = 'RED_PACKET' AND lt.status = 'SUCCESS'
+              AND lt.completed_at >= date_trunc('month', CURRENT_DATE)
+        `, [walletId]);
+        
+        const monthlySpecialUsage = BigInt(topupRes.rows[0].total) + BigInt(luckyMoneyRes.rows[0].total);
+
         return {
             limits: {
                 daily_deposit_limit: limits.daily_deposit_limit.toString(),
@@ -166,7 +189,7 @@ const walletRepository = {
                 daily_withdrawal_usage: dailyWithdrawalUsage.toString(),
                 daily_transaction_usage: dailyTransactionUsage.toString(),
                 monthly_transaction_usage: monthlyTransactionUsage.toString(),
-                monthly_special_service_usage: "0" 
+                monthly_special_service_usage: monthlySpecialUsage.toString()
             }
         };
     }

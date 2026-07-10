@@ -3,7 +3,7 @@ const { v7: uuidv7 } = require('uuid');
 
 const idempotencyRepository = {
     findByKey: async (key) => {
-        const query = `SELECT response_body AS response_data FROM idempotency_keys WHERE idempotency_key = $1`;
+        const query = `SELECT request_hash, response_body AS response_data FROM idempotency_keys WHERE idempotency_key = $1`;
         const result = await pool.query(query, [key]);
         return result.rows[0];
     },

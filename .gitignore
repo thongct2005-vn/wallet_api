@@ -1,7 +1,20 @@
 node_modules/
 
+# Biến môi trường (chứa credentials nhạy cảm)
 .env
+.env.*
+!.env.example
 
+# Firebase Service Account Key (KHÔNG ĐƯỢC COMMIT)
 serviceAccountKey.json
+serViceAccountKey.json
+*AccountKey*.json
+*.json.bak
 
-uploads
+# Thư mục upload (chứa dữ liệu người dùng)
+uploads/
+
+# File tạm và backup
+*.bak
+*.tmp
+temp_*.js

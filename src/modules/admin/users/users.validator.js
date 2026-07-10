@@ -14,8 +14,13 @@ const usersValidator = {
         }
     },
 
-    validateCreateCustomer: (req, res, next) => {
+    validateCreateWalletUser: (req, res, next) => {
         const { full_name, email, phone, username } = req.body || {};
+        
+        // Security: Remove password from body if FE sends it
+        if (req.body && req.body.password) {
+            delete req.body.password;
+        }
 
         if (!full_name || !String(full_name).trim()) {
             return res.status(400).json({
@@ -24,11 +29,11 @@ const usersValidator = {
                 error: 'Thieu thong tin bat buoc'
             });
         }
-        if (!email && !phone && !username) {
+        if (!phone) {
             return res.status(400).json({
                 success: false,
                 code: 'VALIDATION_ERROR',
-                error: 'Thieu thong tin bat buoc'
+                error: 'So dien thoai la bat buoc'
             });
         }
         next();
@@ -37,6 +42,11 @@ const usersValidator = {
     validateCreateStaff: (req, res, next) => {
         const { full_name, email, phone, username, role_codes } = req.body || {};
 
+        // Security: Remove password from body if FE sends it
+        if (req.body && req.body.password) {
+            delete req.body.password;
+        }
+
         if (!full_name || !String(full_name).trim()) {
             return res.status(400).json({
                 success: false,
@@ -44,11 +54,19 @@ const usersValidator = {
                 error: 'Thieu thong tin bat buoc (full_name)'
             });
         }
-        if (!email && !phone && !username) {
+        if (!email) {
             return res.status(400).json({
                 success: false,
                 code: 'VALIDATION_ERROR',
-                error: 'Thieu thong tin bat buoc (email/phone/username)'
+                error: 'Email là bắt buộc khi tạo tài khoản nhân viên.'
+            });
+        }
+        
+        if (phone && !/^\d{9,15}$/.test(phone)) {
+            return res.status(400).json({
+                success: false,
+                code: 'VALIDATION_ERROR',
+                error: 'Số điện thoại không hợp lệ (chỉ chứa số, 9-15 ký tự).'
             });
         }
         if (!role_codes || !Array.isArray(role_codes) || role_codes.length === 0) {
@@ -87,22 +105,7 @@ const usersValidator = {
     },
 
     validateResetPassword: (req, res, next) => {
-        const { new_password, confirm_new_password, reason } = req.body || {};
-
-        if (!new_password || new_password.length < 8) {
-            return res.status(400).json({
-                success: false,
-                code: 'VALIDATION_ERROR',
-                error: 'Mat khau phai co toi thieu 8 ky tu'
-            });
-        }
-        if (new_password !== confirm_new_password) {
-            return res.status(400).json({
-                success: false,
-                code: 'VALIDATION_ERROR',
-                error: 'Mat khau xac nhan khong khop'
-            });
-        }
+        const { reason } = req.body || {};
         if (!reason || !String(reason).trim()) {
             return res.status(400).json({
                 success: false,

@@ -9,6 +9,7 @@ const transactionController = {
         const userId = req.user.userId;
         const { amount, pin, external_reference } = req.body;
         const faceImagePath = req.file ? req.file.path : null;
+        const idempotencyKey = req.headers['idempotency-key'];
 
         let bigAmount;
         try {
@@ -19,7 +20,7 @@ const transactionController = {
         }
 
         try {
-            const result = await txService.deposit(userId, bigAmount, pin, faceImagePath, external_reference);
+            const result = await txService.deposit(userId, bigAmount, pin, faceImagePath, external_reference, idempotencyKey);
             return success(req, res, 200, 'Nạp tiền thành công', result );
         } catch (error) { next(error); }
     },
@@ -28,6 +29,7 @@ const transactionController = {
         const userId = req.user.userId;
         const { amount, pin, linked_bank_id, external_reference } = req.body;
         const faceImagePath = req.file ? req.file.path : null;
+        const idempotencyKey = req.headers['idempotency-key'];
 
         if (!linked_bank_id) {
             return res.status(400).json({ error: 'Vui lòng chọn ngân hàng rút tiền' });
@@ -42,7 +44,7 @@ const transactionController = {
         }
 
         try {
-            const result = await txService.withdraw(userId, bigAmount, pin, faceImagePath, linked_bank_id, external_reference);
+            const result = await txService.withdraw(userId, bigAmount, pin, faceImagePath, linked_bank_id, external_reference, idempotencyKey);
             return success(req, res, 200, 'Rút tiền thành công', result );
         } catch (error) { next(error); }
     },
@@ -51,6 +53,7 @@ const transactionController = {
         const userId = req.user.userId;
         const { amount, pin, bank_code, bank_name, account_number, external_reference } = req.body;
         const faceImagePath = req.file ? req.file.path : null;
+        const idempotencyKey = req.headers['idempotency-key'];
 
         if (!bank_code || !account_number) {
             return res.status(400).json({ error: 'Vui lòng cung cấp ngân hàng và số tài khoản nhận' });
@@ -73,7 +76,8 @@ const transactionController = {
                 bank_code, 
                 bank_name || bank_code, 
                 account_number, 
-                external_reference
+                external_reference,
+                idempotencyKey
             );
             return success(req, res, 200, 'Chuyển tiền ngân hàng thành công', result );
         } catch (error) { next(error); }

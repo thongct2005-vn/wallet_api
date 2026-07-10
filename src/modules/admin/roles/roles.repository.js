@@ -12,11 +12,22 @@ const ROLE_SELECT = `
 const rolesRepository = {
     listRoles: async () => {
         const query = `
-            ${ROLE_SELECT}
-            ORDER BY created_at DESC
+            SELECT r.*, 
+                   COALESCE(
+                       json_agg(p.code) FILTER (WHERE p.code IS NOT NULL), 
+                       '[]'
+                   ) as permissions
+            FROM roles r
+            LEFT JOIN role_permissions rp ON r.id = rp.role_id
+            LEFT JOIN permissions p ON rp.permission_id = p.id
+            GROUP BY r.id
+            ORDER BY r.created_at DESC
         `;
         const res = await pool.query(query);
-        return res.rows.map(mapRoleRow);
+        return res.rows.map(row => ({
+            ...mapRoleRow(row),
+            permissions: row.permissions
+        }));
     },
 
     findRoleById: async (id) => {

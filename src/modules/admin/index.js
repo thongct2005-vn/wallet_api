@@ -32,18 +32,18 @@ router.use(authenticateJwt, requireAdmin);
 // ═══════════════════════════════════════════
 // Gom tất cả sub-routes
 // ═══════════════════════════════════════════
-router.use('/',            require('./users/users.routes'));          // /admin/users, /admin/customers, /admin/staffs
-router.use('/roles',       require('./roles/roles.routes'));          // /admin/roles
+router.use('/', require('./users/users.routes'));          // /admin/users, /admin/staffs
+router.use('/roles', require('./roles/roles.routes'));          // /admin/roles
 router.use('/permissions', require('./roles/permissions.routes'));    // /admin/permissions
-router.use('/wallets',     require('./wallets/wallets.routes'));      // /admin/wallets
-router.use('/merchants',   require('./merchants/merchants.routes'));  // /admin/merchants
-router.use('/transactions',require('./transactions/transactions.routes')); // /admin/transactions/topups, etc
-router.use('/payments',    require('./payments/payments.routes'));    // /admin/payments
-router.use('/webhooks',    require('./webhooks/webhooks.routes'));    // /admin/webhooks
-router.use('/dashboard',   require('./dashboard/dashboard.routes'));  // /admin/dashboard/*
-router.use('/reports',     require('./reports/reports.routes'));      // /admin/reports/*
-router.use('/settings',    require('./settings/settings.routes'));    // /admin/settings
-router.use('/logs',        require('./logs/logs.routes'));            // /admin/logs/api, /admin/logs/system
-router.use('/kyc',         require('./kyc/kyc.routes'));              // /admin/kyc
+router.use('/wallets', require('./wallets/wallets.routes'));      // /admin/wallets
+router.use('/merchants', require('./merchants/merchants.routes'));  // /admin/merchants
+router.use('/transactions', require('./transactions/transactions.routes')); // /admin/transactions/topups, etc
+router.use('/payments', require('./payments/payments.routes'));    // /admin/payments
+router.use('/webhooks', require('./webhooks/webhooks.routes'));    // /admin/webhooks
+router.use('/dashboard', require('./dashboard/dashboard.routes'));  // /admin/dashboard/*
+router.use('/reports', require('./reports/reports.routes'));      // /admin/reports/*
+router.use('/settings', require('./settings/settings.routes'));    // /admin/settings
+router.use('/logs', require('./logs/logs.routes'));            // /admin/logs/api, /admin/logs/system
+router.use('/kyc', require('./kyc/kyc.routes'));              // /admin/kyc
 
 module.exports = router;

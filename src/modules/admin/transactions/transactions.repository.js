@@ -15,7 +15,7 @@ const transactionsRepository = {
             idx++;
         }
         if (status) {
-            conditions.push(`d.status = $${idx}`);
+            conditions.push(`d.status = $${idx}::deposit_status`);
             params.push(status);
             idx++;
         }
@@ -82,7 +82,7 @@ const transactionsRepository = {
             idx++;
         }
         if (status) {
-            conditions.push(`t.status = $${idx}`);
+            conditions.push(`t.status = $${idx}::transfer_status`);
             params.push(status);
             idx++;
         }
@@ -155,12 +155,12 @@ const transactionsRepository = {
             idx++;
         }
         if (status) {
-            conditions.push(`lt.status = $${idx}`);
+            conditions.push(`lt.status = $${idx}::transaction_status`);
             params.push(status);
             idx++;
         }
         if (type) {
-            conditions.push(`lt.transaction_type = $${idx}`);
+            conditions.push(`lt.transaction_type = $${idx}::ledger_transaction_type`);
             params.push(type);
             idx++;
         }
@@ -200,9 +200,12 @@ const transactionsRepository = {
 
     findLedgerEntriesByTransactionId: async (transactionId) => {
         const { rows } = await pool.query(`
-            SELECT le.*, lt.transaction_no
+            SELECT le.*, lt.transaction_no, 
+                   w.wallet_code, w.wallet_no, u.full_name as owner_name
             FROM ledger_entries le
             JOIN ledger_transactions lt ON lt.id = le.ledger_transaction_id
+            LEFT JOIN wallets w ON w.id = le.wallet_id
+            LEFT JOIN users u ON u.id = w.user_id
             WHERE le.ledger_transaction_id = $1
             ORDER BY le.created_at ASC
         `, [transactionId]);
@@ -227,12 +230,12 @@ const transactionsRepository = {
             idx++;
         }
         if (accountType) {
-            conditions.push(`le.account_type = $${idx}`);
+            conditions.push(`le.account_type = $${idx}::ledger_account_type`);
             params.push(accountType);
             idx++;
         }
         if (entryType) {
-            conditions.push(`le.entry_type = $${idx}`);
+            conditions.push(`le.entry_type = $${idx}::ledger_entry_type`);
             params.push(entryType);
             idx++;
         }

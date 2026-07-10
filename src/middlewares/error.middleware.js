@@ -5,6 +5,7 @@ const ERROR_MAPPINGS = {
     'Validation_Error': [400, 'VALIDATION_ERROR', 'Dữ liệu không hợp lệ'],
     'Password_Confirm_Not_Match': [400, 'VALIDATION_ERROR', 'Mật khẩu xác nhận không khớp'],
     'Password_Policy_Invalid': [400, 'VALIDATION_ERROR', 'Mật khẩu phải có ít nhất 8 ký tự'],
+    'PIN_Policy_Invalid': [400, 'VALIDATION_ERROR', 'Mật khẩu phải là đúng 6 chữ số'],
     'User_Conflict': [409, 'CONFLICT', 'Số điện thoại, email hoặc username đã tồn tại'],
     'Email_Phone_Exists': [409, 'CONFLICT', 'Số điện thoại hoặc email đã tồn tại'],
     'Role_Not_Found': [500, 'RBAC_NOT_INITIALIZED', 'Role USER chưa được khởi tạo'],
@@ -38,12 +39,20 @@ const ERROR_MAPPINGS = {
     'Face_Verification_Failed': [403, 'FACE_FAILED', 'Xác thực khuôn mặt không trùng khớp với dữ liệu eKYC.'],
     'Bank_Insufficient_Balance': [400, 'BANK_INSUFFICIENT', 'Ngân hàng từ chối: Số dư thẻ/tài khoản không đủ.'],
     'Bank_Maintenance': [503, 'BANK_MAINTENANCE', 'Ngân hàng từ chối: Hệ thống đang bảo trì.'],
+    'FaceMatch_Service_Unavailable': [503, 'SERVICE_UNAVAILABLE', 'Dịch vụ xác thực khuôn mặt đang bảo trì. Vui lòng thử lại sau.'],
     'Insufficient_Balance': [400, 'INSUFFICIENT_BALANCE', 'Số dư trong ví không đủ để thực hiện giao dịch này.'],
     'Self_Transfer_Not_Allowed': [400, 'SELF_TRANSFER', 'Không thể tự chuyển tiền cho chính mình'],
     'Receiver_Not_KYC': [403, 'RECEIVER_NOT_KYC', 'Người nhận chưa xác thực danh tính (KYC). Giao dịch bị từ chối!'],
     'Invalid_Amount': [400, 'INVALID_AMOUNT', 'Số tiền không hợp lệ'],
-    'Daily_Limit_Exceeded': [400, 'DAILY_LIMIT_EXCEEDED', 'Giao dịch vượt quá hạn mức nạp tiền trong ngày.'],
-    
+    'Daily_Limit_Exceeded': [400, 'DAILY_LIMIT_EXCEEDED', 'Giao dịch vượt quá hạn mức trong ngày.'],
+    'Monthly_Limit_Exceeded': [400, 'MONTHLY_LIMIT_EXCEEDED', 'Giao dịch vượt quá hạn mức trong tháng.'],
+
+    // [SECURITY FIX] Error codes mới từ bản vá bảo mật
+    'Auto_Debit_Not_Authorized': [403, 'AUTO_DEBIT_NOT_AUTHORIZED', 'Người dùng chưa ủy quyền thanh toán tự động cho dịch vụ này.'],
+    'Auto_Debit_Transaction_Limit_Exceeded': [400, 'AUTO_DEBIT_LIMIT_EXCEEDED', 'Giao dịch tự động vượt quá hạn mức cho phép.'],
+    'Upload_Invalid_File_Type': [400, 'INVALID_FILE_TYPE', 'Chỉ chấp nhận file ảnh (JPEG, PNG, WebP).'],
+    'PIN_Not_Set': [400, 'PIN_NOT_SET', 'Bạn chưa cài đặt mã PIN cho ví.'],
+
     // Auth Interceptor/Config
     'Auth_Config_Missing': [500, 'SERVER_ERROR', 'Lỗi cấu hình server bảo mật']
 };
@@ -63,8 +72,10 @@ function errorHandler(err, req, res, next) {
         return failure(req, res, status, code, message);
     }
 
-    // Default error
-    return failure(req, res, 500, 'INTERNAL_SERVER_ERROR', 'Lỗi hệ thống không xác định. Vui lòng thử lại sau.', err.message);
+    // [SECURITY FIX] Không trả err.message gốc trong production — tránh lộ cấu trúc DB/query
+    const isProduction = process.env.NODE_ENV === 'production';
+    const debugInfo = isProduction ? undefined : err.message;
+    return failure(req, res, 500, 'INTERNAL_SERVER_ERROR', 'Lỗi hệ thống không xác định. Vui lòng thử lại sau.', debugInfo);
 }
 
 module.exports = errorHandler;

@@ -1368,13 +1368,13 @@ COMMIT
 |Method|Endpoint|Mô tả|
 |-|-|-|
 |GET|`/admin/users`|Danh sách user|
-|POST|`/admin/customers`|Tạo khách hàng (kèm ví)|
-|POST|`/admin/staffs`|Tạo nhân viên (kèm RBAC role)|
+|POST|`/admin/users`|Tạo người dùng ví (kèm ví, trả mật khẩu tạm 6 số, ép đổi MK)|
+|POST|`/admin/staffs`|Tạo nhân viên (kèm RBAC role, trả mật khẩu tạm 6 số, ép đổi MK)|
 |GET|`/admin/users/{id}`|Chi tiết user|
 |PATCH|`/admin/users/{id}`|Cập nhật user|
 |POST|`/admin/users/{id}/actions/lock`|Khóa user|
 |POST|`/admin/users/{id}/actions/unlock`|Mở khóa user|
-|POST|`/admin/users/{id}/actions/reset-password`|Reset password|
+|POST|`/admin/users/{id}/actions/reset-password`|Reset password (trả mật khẩu tạm 6 số, ép đổi MK)|
 
 ## 12.2. Merchants
 

@@ -1,0 +1,44 @@
+Chủ đề: Hạn mức, biểu phí và hướng dẫn nạp tiền, rút tiền, thanh toán QR trên ví Mio247.
+Từ khóa phụ: Biểu phí rút tiền, phí nạp tiền, tối đa rút bao nhiêu, giới hạn rút tiền, nạp tiền, thanh toán QR, quét mã QR, hạn mức giao dịch.
+
+--- HẠN MỨC VÀ PHÍ RÚT TIỀN ---
+Quy định về việc rút tiền từ ví Mio247 về tài khoản ngân hàng:
+- Hạn mức rút tiền tối thiểu: 50.000 VNĐ cho mỗi giao dịch.
+- Hạn mức rút tiền tối đa: 20.000.000 VNĐ cho mỗi giao dịch và không quá 50.000.000 VNĐ/ngày.
+- Biểu phí: 
+  + Rút tiền về ngân hàng cùng hệ thống (đã liên kết): Miễn phí 3 giao dịch đầu tiên trong tháng. Từ giao dịch thứ 4, phí là 3.300 VNĐ/giao dịch.
+  + Thời gian nhận tiền: Tiền sẽ về tài khoản ngân hàng ngay lập tức (24/7). Nếu hệ thống ngân hàng bảo trì, thời gian có thể kéo dài từ 2-4 tiếng.
+
+--- HẠN MỨC VÀ PHÍ NẠP TIỀN ---
+Quy định về việc nạp tiền từ ngân hàng vào ví Mio247:
+- Hạn mức nạp tiền tối thiểu: 10.000 VNĐ cho mỗi giao dịch.
+- Hạn mức nạp tiền tối đa: 50.000.000 VNĐ/ngày.
+- Biểu phí nạp tiền: Miễn phí hoàn toàn (0 đồng).
+- Thời gian xử lý: Tiền được cộng vào ví ngay lập tức sau khi ngân hàng xác nhận thành công.
+
+--- HƯỚNG DẪN NẠP TIỀN ---
+Bước 1: Tại trang chủ, chọn "Nạp tiền".
+Bước 2: Chọn ngân hàng đã liên kết mà bạn muốn nạp từ đó.
+Bước 3: Nhập số tiền muốn nạp (tối thiểu 10.000 VNĐ).
+Bước 4: Xác nhận giao dịch bằng mã PIN ví hoặc xác thực sinh trắc học.
+Bước 5: Tiền sẽ được cộng vào số dư ví ngay lập tức.
+
+--- HƯỚNG DẪN RÚT TIỀN ---
+Bước 1: Tại trang chủ, chọn "Rút tiền".
+Bước 2: Chọn ngân hàng đã liên kết mà bạn muốn rút về.
+Bước 3: Nhập số tiền muốn rút (tối thiểu 50.000 VNĐ, tối đa 20.000.000 VNĐ/giao dịch).
+Bước 4: Xác nhận giao dịch bằng mã PIN ví.
+Bước 5: Tiền sẽ được chuyển về tài khoản ngân hàng ngay lập tức.
+
+--- THANH TOÁN QR ---
+Mio247 hỗ trợ thanh toán bằng mã QR tại các cửa hàng, quán ăn, siêu thị đã liên kết:
+Bước 1: Tại trang chủ, nhấn vào biểu tượng "Quét QR" hoặc "Thanh toán".
+Bước 2: Quét mã QR tại quầy thanh toán của cửa hàng.
+Bước 3: Xác nhận số tiền thanh toán.
+Bước 4: Nhập mã PIN ví để hoàn tất giao dịch.
+Bước 5: Nhận thông báo thanh toán thành công.
+
+--- HẠN MỨC CHUYỂN TIỀN ---
+- Chuyển tiền tối thiểu: 1.000 VNĐ/giao dịch.
+- Chuyển tiền tối đa: 50.000.000 VNĐ/ngày.
+- Phí chuyển tiền: Miễn phí hoàn toàn cho mọi giao dịch chuyển tiền giữa các ví Mio247.

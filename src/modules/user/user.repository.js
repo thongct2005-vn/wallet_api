@@ -62,6 +62,12 @@ const userRepository = {
     updateUserEmail: async (userId, email) => {
         const query = `UPDATE users SET email = $1 WHERE id = $2`;
         await pool.query(query, [email, userId]);
+    },
+
+    getUserByEmail: async (email) => {
+        const query = `SELECT id FROM users WHERE email = $1`;
+        const result = await pool.query(query, [email]);
+        return result.rows[0];
     }
 };
 

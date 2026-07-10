@@ -1,0 +1,43 @@
+Chủ đề: Hướng dẫn đăng ký tài khoản, đăng nhập và định danh tài khoản (KYC) trên ví điện tử Mio247.
+Từ khóa phụ: Tạo tài khoản, đăng ký, đăng nhập, mật khẩu, quên mật khẩu, xác minh danh tính, KYC, nhận diện khuôn mặt, OTP.
+
+--- ĐĂNG KÝ TÀI KHOẢN ---
+Các bước đăng ký tài khoản Mio247:
+Bước 1: Tải ứng dụng Mio247 từ Google Play (Android) hoặc App Store (iOS) và mở ứng dụng.
+Bước 2: Tại màn hình đăng nhập, chọn "Đăng ký tài khoản mới".
+Bước 3: Nhập số điện thoại di động của bạn (định dạng 10 số, bắt đầu bằng 0). Mỗi số điện thoại chỉ được đăng ký 1 tài khoản.
+Bước 4: Nhập mã OTP 6 số được gửi về số điện thoại vừa nhập. Mã OTP có hiệu lực trong 60 giây.
+Bước 5: Tạo mật khẩu 6 số cho tài khoản. Mật khẩu này sẽ dùng để đăng nhập mỗi lần mở ứng dụng.
+Bước 6: Hoàn tất đăng ký! Bạn sẽ được chuyển vào trang chủ của ứng dụng.
+
+Lưu ý: Sau khi đăng ký, bạn cần thực hiện Định danh tài khoản (KYC) để sử dụng đầy đủ các tính năng như chuyển tiền, nạp/rút tiền.
+
+--- ĐĂNG NHẬP ---
+Các bước đăng nhập vào Mio247:
+Bước 1: Mở ứng dụng Mio247.
+Bước 2: Nhập số điện thoại đã đăng ký.
+Bước 3: Nhập mật khẩu 6 số của bạn.
+Bước 4: Nếu đăng nhập thành công, bạn sẽ được chuyển vào trang chủ.
+
+Lưu ý về bảo mật đăng nhập:
+- Nếu nhập sai mật khẩu quá 5 lần liên tiếp, tài khoản sẽ bị tạm khóa trong 30 phút.
+- Sau khi hết thời gian khóa, bạn có thể thử đăng nhập lại hoặc sử dụng tính năng "Quên mật khẩu".
+
+--- QUÊN MẬT KHẨU ---
+Nếu quên mật khẩu, bạn có thể đặt lại mật khẩu bằng cách:
+Bước 1: Tại màn hình nhập mật khẩu, nhấn vào "Quên mật khẩu?".
+Bước 2: Hệ thống sẽ yêu cầu xác thực khuôn mặt để đảm bảo bạn là chủ sở hữu tài khoản.
+Bước 3: Sau khi xác thực thành công, nhập mã OTP được gửi về số điện thoại đăng ký.
+Bước 4: Tạo mật khẩu 6 số mới.
+Bước 5: Đăng nhập lại bằng mật khẩu mới.
+
+--- ĐỊNH DANH TÀI KHOẢN (KYC) ---
+Định danh tài khoản (KYC - Know Your Customer) là bắt buộc để sử dụng các tính năng tài chính trên Mio247.
+Các bước thực hiện KYC:
+Bước 1: Đăng nhập vào ứng dụng Mio247.
+Bước 2: Tại trang chủ hoặc phần Hồ sơ, chọn "Xác minh danh tính" hoặc nhấn vào thông báo yêu cầu KYC.
+Bước 3: Hệ thống sẽ yêu cầu bạn nhận diện khuôn mặt trực tiếp qua camera. Hãy đảm bảo ánh sáng đủ và giữ khuôn mặt thẳng hướng camera.
+Bước 4: Nhập đầy đủ thông tin cá nhân: Họ tên đầy đủ, Ngày sinh, Số CCCD/CMND.
+Bước 5: Hệ thống sẽ tự động xác thực. Nếu thành công, tài khoản của bạn sẽ được nâng cấp lên trạng thái "Đã xác minh".
+
+Lưu ý: Tài khoản chưa KYC sẽ bị giới hạn: Không thể chuyển tiền, không thể liên kết ngân hàng, không thể nạp/rút tiền.

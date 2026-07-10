@@ -17,11 +17,11 @@ const reportsRepository = {
             values.push(params.to);
         }
         if (params.type) {
-            conditions.push(`transaction_type = $${paramIndex++}`);
+            conditions.push(`transaction_type = $${paramIndex++}::ledger_transaction_type`);
             values.push(params.type);
         }
         if (params.status) {
-            conditions.push(`status = $${paramIndex++}`);
+            conditions.push(`status = $${paramIndex++}::transaction_status`);
             values.push(params.status);
         }
 
@@ -31,10 +31,10 @@ const reportsRepository = {
             SELECT 
                 COUNT(*) as total_count,
                 COALESCE(SUM(amount) FILTER (WHERE status = 'SUCCESS'), 0) as total_success_amount,
-                COUNT(*) FILTER (WHERE transaction_type = 'DEPOSIT_TRANSACTION' AND status = 'SUCCESS') as total_topup_success,
-                COUNT(*) FILTER (WHERE transaction_type = 'WALLET_TRANSFER' AND status = 'SUCCESS') as total_transfer_success,
-                COUNT(*) FILTER (WHERE transaction_type = 'PAYMENT_TRANSACTION' AND status = 'SUCCESS') as total_payment_success,
-                COUNT(*) FILTER (WHERE transaction_type = 'REFUND_TRANSACTION' AND status = 'SUCCESS') as total_refund_success
+                COUNT(*) FILTER (WHERE transaction_type = 'TOPUP' AND status = 'SUCCESS') as total_topup_success,
+                COUNT(*) FILTER (WHERE transaction_type = 'TRANSFER' AND status = 'SUCCESS') as total_transfer_success,
+                COUNT(*) FILTER (WHERE transaction_type = 'PAYMENT' AND status = 'SUCCESS') as total_payment_success,
+                COUNT(*) FILTER (WHERE transaction_type = 'REFUND' AND status = 'SUCCESS') as total_refund_success
             FROM ledger_transactions
             ${whereClause}
         `;
@@ -74,7 +74,7 @@ const reportsRepository = {
             values.push(params.to);
         }
         if (params.status) {
-            conditions.push(`d.status = $${paramIndex++}`);
+            conditions.push(`d.status = $${paramIndex++}::deposit_status`);
             values.push(params.status);
         }
 
@@ -125,7 +125,7 @@ const reportsRepository = {
             values.push(params.to);
         }
         if (params.status) {
-            conditions.push(`t.status = $${paramIndex++}`);
+            conditions.push(`t.status = $${paramIndex++}::transfer_status`);
             values.push(params.status);
         }
 
@@ -180,7 +180,7 @@ const reportsRepository = {
             values.push(params.to);
         }
         if (params.status) {
-            conditions.push(`p.status = $${paramIndex++}`);
+            conditions.push(`p.status = $${paramIndex++}::payment_order_status`);
             values.push(params.status);
         }
         if (params.merchant_id) {
@@ -235,7 +235,7 @@ const reportsRepository = {
             values.push(params.to);
         }
         if (params.status) {
-            conditions.push(`r.status = $${paramIndex++}`);
+            conditions.push(`r.status = $${paramIndex++}::refund_status`);
             values.push(params.status);
         }
         if (params.merchant_id) {
@@ -286,7 +286,7 @@ const reportsRepository = {
         let paramIndex = 1;
 
         if (params.status) {
-            conditions.push(`m.status = $${paramIndex++}`);
+            conditions.push(`m.status = $${paramIndex++}::merchant_status`);
             values.push(params.status);
         }
 

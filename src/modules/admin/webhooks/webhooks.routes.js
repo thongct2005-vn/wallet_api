@@ -21,6 +21,27 @@ const notImplemented = require('../../../utils/notImplemented');
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: So trang
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: So luong moi trang
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: Trang thai webhook
+ *       - in: query
+ *         name: merchant_id
+ *         schema:
+ *           type: string
+ *         description: ID cua merchant
  *     responses:
  *       200:
  *         description: Webhooks
@@ -30,6 +51,13 @@ const notImplemented = require('../../../utils/notImplemented');
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Webhook ID (MongoDB ObjectId)
  *     responses:
  *       200:
  *         description: Webhook detail
@@ -39,6 +67,13 @@ const notImplemented = require('../../../utils/notImplemented');
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Webhook ID (MongoDB ObjectId)
  *     responses:
  *       200:
  *         description: Retry queued
@@ -53,6 +88,14 @@ const notImplemented = require('../../../utils/notImplemented');
  *         description: Retry due job result
  */
 
+const READ_PERM = requirePermission('admin.webhooks.read');
+const UPDATE_PERM = requirePermission('admin.webhooks.retry');
+const webhooksValidator = require('./webhooks.validator');
+const validateId = webhooksValidator.validateIdParam;
 
+router.get('/', READ_PERM, webhooksController.listWebhooks);
+router.get('/:id', READ_PERM, validateId, webhooksController.getWebhookDetail);
+router.post('/:id/actions/retry', UPDATE_PERM, validateId, webhooksController.retryWebhook);
+router.post('/jobs/retry-due', UPDATE_PERM, webhooksController.runRetryDueJob);
 
 module.exports = router;

@@ -25,11 +25,15 @@ const logsRepository = {
         if (actor_type) query.actor_type = actor_type;
         if (action) query.action = action;
         
-        // Tìm kiếm linh hoạt theo Trace ID hoặc ID đối tượng
+        // Tìm kiếm linh hoạt
         if (q) {
             query.$or = [
                 { trace_id: { $regex: q, $options: 'i' } },
-                { entity_id: { $regex: q, $options: 'i' } }
+                { entity_id: { $regex: q, $options: 'i' } },
+                { action: { $regex: q, $options: 'i' } },
+                { actor_type: { $regex: q, $options: 'i' } },
+                { actor_id: { $regex: q, $options: 'i' } },
+                { entity_type: { $regex: q, $options: 'i' } }
             ];
         }
         
@@ -66,7 +70,8 @@ const logsRepository = {
             query.$or = [
                 { message: { $regex: q, $options: 'i' } },
                 { trace_id: { $regex: q, $options: 'i' } },
-                { event: { $regex: q, $options: 'i' } }
+                { event: { $regex: q, $options: 'i' } },
+                { service_name: { $regex: q, $options: 'i' } }
             ];
         }
         
@@ -85,17 +90,23 @@ const logsRepository = {
     // ==========================================
     // 3. PAYMENT TRACES (Truy vết dòng tiền)
     // ==========================================
-    getPaymentTrace: async ({ page = 1, limit = 20, trace_id, payment_no }) => {
+    getPaymentTrace: async ({ page = 1, limit = 20, trace_id, payment_no, q }) => {
         const db = mongoose.connection.db;
         if (!db) throw new Error('Chưa kết nối MongoDB');
 
         const skip = (Math.max(1, page) - 1) * limit;
         const query = {};
         
-        if (trace_id) {
-            query.trace_id = { $regex: trace_id, $options: 'i' };
+        const searchQuery = q || trace_id;
+        
+        if (searchQuery) {
+            query.$or = [
+                { trace_id: { $regex: searchQuery, $options: 'i' } },
+                { entity_id: { $regex: searchQuery, $options: 'i' } },
+                { event: { $regex: searchQuery, $options: 'i' } },
+                { module: { $regex: searchQuery, $options: 'i' } }
+            ];
         } else if (payment_no) {
-            // Fallback: Nếu Admin tìm bằng mã giao dịch, tìm trong entity_id
             query.entity_id = { $regex: payment_no, $options: 'i' };
         }
         
@@ -119,11 +130,38 @@ const logsRepository = {
         if (!db) throw new Error('Chưa kết nối MongoDB');
 
         const skip = (Math.max(1, page) - 1) * limit;
-        const query = q ? { path: { $regex: q, $options: 'i' } } : {};
+        const query = q ? {
+            $or: [
+                { path: { $regex: q, $options: 'i' } },
+                { method: { $regex: q, $options: 'i' } },
+                { ip_address: { $regex: q, $options: 'i' } }
+            ]
+        } : {};
         
         const items = await db.collection('api_request_logs')
             .find(query).sort({ created_at: -1 }).skip(skip).limit(Number(limit)).toArray();
         const total = await db.collection('api_request_logs').countDocuments(query);
+        
+        return { items, total, page: Number(page), limit: Number(limit) };
+    },
+
+    // ==========================================
+    // 5. WEBHOOK LOGS (Truy vết Webhook)
+    // ==========================================
+    getWebhookLogs: async ({ page = 1, limit = 20, q }) => {
+        const db = mongoose.connection.db;
+        if (!db) throw new Error('Chưa kết nối MongoDB');
+
+        const skip = (Math.max(1, page) - 1) * limit;
+        const query = {}; // Bỏ service_name vì bảng này chỉ chứa webhook log
+        
+        if (q) {
+            query['metadata.transaction_id'] = { $regex: q, $options: 'i' };
+        }
+        
+        const items = await db.collection('webhook_attempt_logs')
+            .find(query).sort({ created_at: -1 }).skip(skip).limit(Number(limit)).toArray();
+        const total = await db.collection('webhook_attempt_logs').countDocuments(query);
         
         return { items, total, page: Number(page), limit: Number(limit) };
     }

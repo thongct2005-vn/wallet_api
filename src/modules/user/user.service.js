@@ -18,6 +18,12 @@ const userService = {
 
 
     requestEmailOtp: async (userId, email) => {
+        // Kiểm tra xem email đã được sử dụng bởi user khác chưa
+        const existingUser = await userRepository.getUserByEmail(email);
+        if (existingUser && existingUser.id !== userId) {
+            throw new Error('Email này đã được sử dụng bởi một tài khoản khác.');
+        }
+
         // Sinh mã OTP 6 số ngẫu nhiên
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
         // Lưu vào DB (5 phút)

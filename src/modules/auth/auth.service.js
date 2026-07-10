@@ -39,6 +39,12 @@ function validatePassword(password) {
     }
 }
 
+function validatePinPassword(password) {
+    if (typeof password !== 'string' || !/^\d{6}$/.test(password)) {
+        throw new Error('PIN_Policy_Invalid');
+    }
+}
+
 function publicUser(user, context) {
     return {
         id: user.id,
@@ -48,6 +54,7 @@ function publicUser(user, context) {
         email: user.email,
         status: user.status,
         is_kyc_verified: user.is_kyc_verified,
+        is_force_change_password: user.is_force_change_password || false,
         roles: context.roles.map(role => role.code),
         permissions: context.permissions
     };
@@ -139,7 +146,8 @@ const authService = {
 
     login: async ({ loginId, password, rememberMe, ipAddress, userAgent }) => {
         if (!loginId || !password) throw new Error('Validation_Error');
-        const user = await authRepository.findByLoginId(loginId);
+        const sanitizedLoginId = String(loginId).trim();
+        const user = await authRepository.findByLoginId(sanitizedLoginId);
         if (!user) {
             await writeSecurityLog({ event: 'LOGIN_FAILED', login_id: loginId, reason: 'INVALID_CREDENTIALS', ip_address: ipAddress });
             throw new Error('Invalid_Credentials');
@@ -164,6 +172,12 @@ const authService = {
         }
 
         if (user.status !== 'ACTIVE') throw new Error('Account_Inactive');
+
+        if (user.is_force_change_password && user.temporary_password_expires_at) {
+            if (new Date(user.temporary_password_expires_at) < new Date()) {
+                throw new Error('Temporary_Password_Expired');
+            }
+        }
 
         if (Number(user.failed_login_attempts || 0) > 0 || user.locked_until) {
             await authRepository.markLoginSuccess(user.id);
@@ -212,30 +226,26 @@ const authService = {
 
         if (user.status !== 'ACTIVE') throw new Error('Account_Inactive');
 
+        if (user.is_force_change_password && user.temporary_password_expires_at) {
+            if (new Date(user.temporary_password_expires_at) < new Date()) {
+                throw new Error('Temporary_Password_Expired');
+            }
+        }
+
         if (Number(user.failed_login_attempts || 0) > 0 || user.locked_until) {
             await authRepository.markLoginSuccess(user.id);
         }
 
-        const tokenVersion = await authRepository.incrementTokenVersion(user.id);
-        const accessToken = jwt.sign({
-            userId: user.id,
-            role: user.user_type,
-            tokenVersion
-        }, ensureJwtSecret(), { expiresIn: '15m' });
-
-        const refreshToken = crypto.randomBytes(40).toString('hex');
-        await authRepository.withTransaction(async client => {
+        // Lấy roles & permissions để tạo JWT chuẩn (thống nhất với login và refreshToken flow)
+        const context = await authRepository.getRolesAndPermissions(user.id);
+        const tokens = await authRepository.withTransaction(async client => {
+            // Thu hồi toàn bộ refresh token cũ (chính sách single-device cho mobile)
             await authRepository.revokeAllUserRefreshTokens(client, user.id, ipAddress);
-            await authRepository.saveRefreshToken(client, {
-                userId: user.id,
-                tokenHash: tokenHash(refreshToken),
-                tokenFamilyId: uuidv7(),
-                expiresAt: new Date(Date.now() + REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000),
-                ipAddress,
-                userAgent
-            });
+            // Dùng issueTokenPair() để tạo access_token + refresh_token nhất quán
+            return issueTokenPair(user, context, { ipAddress, userAgent, client });
         });
 
+        // Gửi sự kiện kick-out cho các phiên đăng nhập cũ trên thiết bị khác
         try {
             const { emitToUser } = require('../../utils/socket');
             emitToUser(user.id, 'force_logout', { reason: 'logged_in_elsewhere' });
@@ -244,14 +254,14 @@ const authService = {
         }
 
         return {
-            access_token: accessToken,
-            refresh_token: refreshToken,
+            ...tokens,
             user_info: {
                 id: user.id,
                 email: user.email,
                 phone: user.phone,
                 role: user.user_type,
-                is_kyc_verified: user.is_kyc_verified
+                is_kyc_verified: user.is_kyc_verified,
+                is_force_change_password: user.is_force_change_password || false
             }
         };
     },
@@ -312,12 +322,20 @@ const authService = {
     },
 
     changePassword: async ({ userId, currentPassword, newPassword, confirmNewPassword, ipAddress, userAgent }) => {
-        validatePassword(newPassword);
         if (newPassword !== confirmNewPassword) throw new Error('Password_Confirm_Not_Match');
+
         const user = await authRepository.findById(userId);
         if (!user) throw new Error('User_Not_Found');
+
+        if (user.user_type === 'USER') {
+            validatePinPassword(newPassword);
+        } else {
+            validatePassword(newPassword);
+        }
+
         if (!await bcrypt.compare(currentPassword, user.password_hash)) throw new Error('Current_Password_Invalid');
         if (await bcrypt.compare(newPassword, user.password_hash)) throw new Error('Password_Must_Be_Different');
+
         const passwordHash = await bcrypt.hash(newPassword, 10);
         await authRepository.withTransaction(async client => {
             await authRepository.updatePassword(client, userId, passwordHash);
@@ -354,14 +372,13 @@ const authService = {
             ipAddress,
             userAgent
         });
-        return {
-            accepted: true,
-            ...(process.env.NODE_ENV === 'production' ? {} : { reset_token: rawToken })
-        };
+        // [SECURITY FIX] Luôn chỉ trả { accepted: true }, KHÔNG BAO GIỜ leak reset token trong response
+        // Token chỉ được gửi qua kênh an toàn (SMS/Email)
+        return { accepted: true };
     },
 
     resetPassword: async ({ resetToken, newPassword, confirmNewPassword, ipAddress, userAgent }) => {
-        validatePassword(newPassword);
+        validatePinPassword(newPassword);
         if (newPassword !== confirmNewPassword) throw new Error('Password_Confirm_Not_Match');
         const hash = tokenHash(resetToken);
         let userId;
@@ -466,6 +483,65 @@ const authService = {
             entityId: user.id,
             ipAddress,
             userAgent
+        });
+    },
+
+    verifyPhoneOTP: async (phone, code) => {
+        const user = await authRepository.findByLoginId(phone);
+        if (!user) throw new Error('User_Not_Found');
+
+        const twilioVerifyService = require('../../shared/services/twilio-verify.service');
+        const verifyRes = await twilioVerifyService.checkVerification({ phone, code });
+        if (!verifyRes.success) {
+            throw new Error(verifyRes.status === 'pending' || verifyRes.status === 'invalid' ? 'VERIFY_CODE_INVALID' : 'TWILIO_VERIFY_ERROR');
+        }
+
+        const normalizedPhone = twilioVerifyService.formatPhoneForTwilio(phone);
+
+        return jwt.sign({
+            sub: user.id,
+            phone: normalizedPhone,
+            purpose: 'SET_PASSWORD_AFTER_VERIFY',
+            token_type: 'VERIFY_TOKEN'
+        }, ensureJwtSecret(), { expiresIn: '15m' });
+    },
+
+    setPasswordAfterVerify: async (verifyToken, newPassword, confirmPassword) => {
+        let decoded;
+        try {
+            decoded = jwt.verify(verifyToken, ensureJwtSecret());
+        } catch (err) {
+            throw new Error('Invalid_Verify_Token');
+        }
+
+        if (decoded.token_type !== 'VERIFY_TOKEN' || decoded.purpose !== 'SET_PASSWORD_AFTER_VERIFY') {
+            throw new Error('Invalid_Verify_Token');
+        }
+
+        if (newPassword !== confirmPassword) throw new Error('Validation_Error');
+        validatePinPassword(newPassword);
+
+        const userId = decoded.sub;
+        const user = await authRepository.findById(userId);
+        if (!user) throw new Error('User_Not_Found');
+
+        const passwordHash = await bcrypt.hash(newPassword, 10);
+
+        await authRepository.withTransaction(async client => {
+            const status = user.status === 'PENDING_VERIFY' ? 'ACTIVE' : user.status;
+
+            await client.query(`
+                UPDATE users
+                SET password_hash = $1,
+                    is_force_change_password = false,
+                    temporary_password_expires_at = null,
+                    status = $2::user_status,
+                    token_version = token_version + 1,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = $3
+            `, [passwordHash, status, userId]);
+
+            await authRepository.revokeAllUserRefreshTokens(client, userId, null);
         });
     }
 };

@@ -15,7 +15,7 @@ const walletsValidator = {
     },
 
     validateReason: (req, res, next) => {
-        const reason = req.body.reason;
+        const reason = req.body?.reason;
         if (!reason || String(reason).trim() === '') {
             return res.status(400).json({
                 success: false,

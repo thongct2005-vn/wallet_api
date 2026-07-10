@@ -1,6 +1,6 @@
 # Admin Module — Trạng thái implement API
 
-> Cập nhật: 24/06/2026 | Tổng: **16/65 routes đã implement** (~25%)
+> Cập nhật: 24/06/2026 | Tổng: **23/65 routes đã implement** (~35%)
 
 ---
 
@@ -11,14 +11,14 @@
 | `users/` | 9 | 5 | 64% |
 | `wallets/` | 6 | 0 | **100%** |
 | `merchants/` | 0 | 7 | 0% |
-| `transactions/` | 0 | 8 | 0% |
+| `transactions/` | 7 | 1 | 88% |
 | `payments/` | 0 | 8 | 0% |
 | `webhooks/` | 0 | 4 | 0% |
 | `dashboard/` | 1 | 5 | 17% |
 | `reports/` | 0 | 8 | 0% |
 | `settings/` | 0 | 3 | 0% |
 | `logs/` | 0 | 4 | 0% |
-| **Tổng** | **16** | **49** | **25%** |
+| **Tổng** | **23** | **42** | **35%** |
 
 ---
 
@@ -29,14 +29,14 @@
 | # | Method | Endpoint | Chức năng |
 |---|--------|----------|-----------|
 | 1 | GET | `/admin/users` | Danh sách user (có filter: q, status, user_type, page, limit) |
-| 2a | POST | `/admin/customers` | Tạo khách hàng (tạo kèm ví mặc định) |
-| 2b | POST | `/admin/staffs` | Tạo nhân viên nội bộ (gán role RBAC, không ví) |
+| 2a | POST | `/admin/users` | Tạo người dùng ví (tạo kèm ví mặc định, trả pass tạm 6 số, ép đổi pass) |
+| 2b | POST | `/admin/staffs` | Tạo nhân viên nội bộ (gán role RBAC, không ví, trả pass tạm 6 số, ép đổi pass) |
 | 3 | GET | `/admin/users/:id` | Chi tiết user (bao gồm roles, wallet info) |
 | 4 | PATCH | `/admin/users/:id` | Cập nhật user (full_name, username, email, phone, is_kyc_verified) |
 | 5 | GET | `/admin/users/:id/wallet` | Xem ví của user |
 | 6 | POST | `/admin/users/:id/actions/lock` | Khóa user (revoke session, ghi audit log) |
 | 7 | POST | `/admin/users/:id/actions/unlock` | Mở khóa user (reset failed attempts, ghi audit log) |
-| 8 | POST | `/admin/users/:id/actions/reset-password` | Reset mật khẩu (validate policy, revoke session, ghi audit log) |
+| 8 | POST | `/admin/users/:id/actions/reset-password` | Reset mật khẩu (trả pass tạm 6 số, revoke session, ép đổi pass, ghi log) |
 | 9 | GET | `/admin/users/:id/audit-logs` | Xem audit log liên quan user |
 
 ### ❌ Chưa implement (notImplemented)
@@ -79,17 +79,22 @@
 
 ---
 
-## 4. Transactions — 0/8 ❌
+## 4. Transactions — 7/8 ✅
+
+### ✅ Đã implement (có controller + service + repository)
 
 | # | Method | Endpoint | Chức năng |
 |---|--------|----------|-----------|
-| 1 | GET | `/admin/topups` | Danh sách topup |
-| 2 | GET | `/admin/topups/:id` | Chi tiết topup |
-| 3 | GET | `/admin/transfers` | Danh sách transfer |
-| 4 | GET | `/admin/transfers/:id` | Chi tiết transfer |
-| 5 | GET | `/admin/transactions` | Danh sách giao dịch ledger |
-| 6 | GET | `/admin/transactions/:id` | Chi tiết giao dịch |
-| 7 | GET | `/admin/ledger-entries` | Tra cứu ledger entries |
+| 1 | GET | `/admin/transactions/topups` | Danh sách topup |
+| 2 | GET | `/admin/transactions/topups/:id` | Chi tiết topup |
+| 3 | GET | `/admin/transactions/transfers` | Danh sách transfer |
+| 4 | GET | `/admin/transactions/transfers/:id` | Chi tiết transfer |
+| 5 | GET | `/admin/transactions/ledger` | Danh sách giao dịch ledger |
+| 6 | GET | `/admin/transactions/ledger/:id` | Chi tiết giao dịch |
+| 7 | GET | `/admin/transactions/ledger-entries` | Tra cứu ledger entries |
+
+### ❌ Chưa implement (notImplemented)
+
 | 8 | POST | `/admin/transactions/reconcile` | Chạy đối soát ledger |
 
 > **Lưu ý:** Refunds cũng thuộc nhóm này

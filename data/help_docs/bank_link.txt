@@ -1,0 +1,30 @@
+Chủ đề: Hướng dẫn liên kết, quản lý và hủy liên kết tài khoản ngân hàng trong ví điện tử Mio247.
+Từ khóa phụ: Thêm ngân hàng, liên kết thẻ, thêm thẻ ATM, xem ngân hàng, hủy liên kết, gỡ thẻ, xóa ngân hàng, lỗi liên kết.
+
+Điều kiện bắt buộc: Người dùng phải hoàn tất định danh tài khoản (KYC) mới có thể liên kết ngân hàng.
+
+--- LIÊN KẾT NGÂN HÀNG MỚI ---
+Các bước thực hiện liên kết ngân hàng:
+Bước 1: Mở ứng dụng Mio247 và đăng nhập vào tài khoản.
+Bước 2: Tại màn hình chính (Trang chủ), chọn biểu tượng "Ví của tôi" hoặc vào phần "Quản lý thẻ/tài khoản ngân hàng".
+Bước 3: Chọn "Thêm thẻ/tài khoản ngân hàng mới".
+Bước 4: Chọn ngân hàng bạn muốn liên kết từ danh sách các ngân hàng được hỗ trợ.
+Bước 5: Nhập các thông tin yêu cầu bao gồm: Số thẻ hoặc Số tài khoản ngân hàng, Tên chủ thẻ (phải khớp với tên đã KYC), và Ngày phát hành thẻ.
+Bước 6: Nhập mã OTP được gửi về số điện thoại đăng ký ngân hàng để xác nhận.
+Bước 7: Ứng dụng thông báo "Liên kết thành công". Thẻ ngân hàng sẽ xuất hiện trong danh sách tài khoản liên kết.
+
+--- XEM DANH SÁCH NGÂN HÀNG ĐÃ LIÊN KẾT ---
+Bước 1: Vào phần "Ví của tôi" hoặc "Quản lý tài khoản".
+Bước 2: Danh sách tất cả các ngân hàng/thẻ đã liên kết sẽ hiển thị tại đây. Bạn có thể xem tên ngân hàng, 4 số cuối tài khoản.
+
+--- HỦY LIÊN KẾT NGÂN HÀNG ---
+Bước 1: Vào phần "Ví của tôi" hoặc "Quản lý tài khoản".
+Bước 2: Chọn ngân hàng/thẻ muốn hủy liên kết.
+Bước 3: Nhấn "Hủy liên kết" hoặc "Gỡ thẻ".
+Bước 4: Xác nhận hành động. Sau khi hủy, bạn sẽ không thể nạp/rút tiền từ ngân hàng này nữa cho đến khi liên kết lại.
+
+--- CÁC LỖI THƯỜNG GẶP KHI LIÊN KẾT ---
+1. Lỗi "Tên chủ thẻ không khớp": Tên trên thẻ ngân hàng phải trùng khớp chính xác với tên đã xác minh KYC trên Mio247.
+2. Lỗi "Số thẻ không hợp lệ": Kiểm tra lại số thẻ đã nhập, đảm bảo không thừa hoặc thiếu số nào.
+3. Lỗi "Không nhận được OTP": Kiểm tra số điện thoại đăng ký với ngân hàng có đúng không, hoặc xem hướng dẫn xử lý lỗi OTP.
+4. Lỗi "Ngân hàng chưa được hỗ trợ": Hiện tại Mio247 hỗ trợ liên kết với các ngân hàng lớn tại Việt Nam. Danh sách ngân hàng sẽ được cập nhật thêm.

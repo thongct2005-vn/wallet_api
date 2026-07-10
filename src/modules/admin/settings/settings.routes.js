@@ -8,9 +8,8 @@
  */
 const express = require('express');
 const router = express.Router();
-const { requirePermission } = require('../../../middlewares/auth.middleware');
+const { requireAdmin } = require('../../../middlewares/auth.middleware');
 const settingsController = require('./settings.controller');
-const notImplemented = require('../../../utils/notImplemented');
 
 /**
  * @swagger
@@ -43,6 +42,8 @@ const notImplemented = require('../../../utils/notImplemented');
  *         description: Setting histories
  */
 
-
+router.get('/', requireAdmin, settingsController.listSettings);
+router.get('/history', requireAdmin, settingsController.getSettingHistory);
+router.patch('/:key', requireAdmin, settingsController.updateSetting);
 
 module.exports = router;

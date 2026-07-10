@@ -1,82 +1,131 @@
 const crypto = require('crypto');
 const merchantsRepository = require('./merchants.repository');
 const { ensureUuid, writeAuditLog, ensureWriteAccess } = require('../_shared');
+const emailService = require('../../../shared/services/email.service');
+const { encryptApiSecret } = require('../../../shared/utils/api-secret.util');
 
-const generateApiKey = () => `pk_live_${crypto.randomBytes(12).toString('hex')}`;
-const generateApiSecret = () => `sk_live_${crypto.randomBytes(24).toString('hex')}`;
-const hashApiSecret = (secret) => {
-    const pepper = process.env.API_SECRET_PEPPER;
-    if (!pepper) throw new Error('System_Config_Error: Missing API_SECRET_PEPPER');
-    return crypto.createHmac('sha256', pepper).update(secret).digest('hex');
-};
+const generateApiKey = (env) => env === 'SANDBOX' ? `pk_test_${crypto.randomBytes(12).toString('hex')}` : `pk_live_${crypto.randomBytes(12).toString('hex')}`;
+const generateApiSecret = (env) => env === 'SANDBOX' ? `sk_test_${crypto.randomBytes(24).toString('hex')}` : `sk_live_${crypto.randomBytes(24).toString('hex')}`;
 
 const merchantsService = {
     createMerchant: async (data, actor) => {
         ensureWriteAccess(actor);
-        const pool = merchantsRepository.getPool();
-        const client = await pool.connect();
-        try {
-            await client.query('BEGIN');
-            
-            // Tạo merchant
-            const merchant = await merchantsRepository.createMerchant(data, client);
+        
+        const MAX_RETRIES = 3;
+        let attempt = 0;
 
-            // Tạo Merchant Owner user
-            const usersRepository = require('../users/users.repository');
-            const bcrypt = require('bcrypt');
-            const cryptoStr = require('crypto');
-            
-            const rawPassword = cryptoStr.randomBytes(6).toString('hex');
-            const passwordHash = await bcrypt.hash(rawPassword, 10);
-            
-            const userId = await usersRepository.createUser(client, {
-                fullName: data.owner_info.full_name,
-                username: data.owner_info.username,
-                email: data.owner_info.email,
-                phone: data.owner_info.phone,
-                passwordHash,
-                userType: 'MERCHANT_USER',
-                status: 'ACTIVE'
-            });
+        while (attempt < MAX_RETRIES) {
+            attempt++;
+            const pool = merchantsRepository.getPool();
+            const client = await pool.connect();
+            try {
+                await client.query('BEGIN');
+                
+                // 1. Tự sinh merchant_code
+                data.merchant_code = await merchantsRepository.generateNextMerchantCode(client);
 
-            await usersRepository.replaceRolesByCodes(client, userId, ['MERCHANT_OWNER']);
-            
-            const crypto = require('crypto');
-            await client.query(`
-                INSERT INTO merchant_users (id, merchant_id, user_id, role_code, is_owner)
-                VALUES ($1, $2, $3, $4, $5)
-            `, [crypto.randomUUID(), merchant.id, userId, 'MERCHANT_OWNER', true]);
-            
-            // Nếu có data callback thì tạo config
-            let callbackConfig = null;
-            if (data.callback) {
-                callbackConfig = await merchantsRepository.createCallbackConfig(merchant.id, data.callback, client);
+                // 2. Tạo merchant
+                const merchant = await merchantsRepository.createMerchant(data, client);
+
+                // 3. Tạo Merchant Owner user
+                const usersRepository = require('../users/users.repository');
+                const bcrypt = require('bcrypt');
+                const cryptoStr = require('crypto');
+                
+                const rawPassword = cryptoStr.randomBytes(6).toString('hex');
+                const passwordHash = await bcrypt.hash(rawPassword, 10);
+                
+                const userId = await usersRepository.createUser(client, {
+                    fullName: data.owner_info.full_name,
+                    username: data.owner_info.username,
+                    email: data.owner_info.email,
+                    phone: data.owner_info.phone,
+                    passwordHash,
+                    userType: 'MERCHANT_USER',
+                    status: 'ACTIVE',
+                    isForceChangePassword: true
+                });
+
+                await usersRepository.replaceRolesByCodes(client, userId, ['MERCHANT_OWNER']);
+                
+                const crypto = require('crypto');
+                await client.query(`
+                    INSERT INTO merchant_users (id, merchant_id, user_id, role_code, is_owner)
+                    VALUES ($1, $2, $3, $4, $5)
+                `, [crypto.randomUUID(), merchant.id, userId, 'MERCHANT_OWNER', true]);
+                
+                // 4. Nếu có data callback thì tạo config
+                let callbackConfig = null;
+                if (data.callback) {
+                    callbackConfig = await merchantsRepository.createCallbackConfig(merchant.id, data.callback, client);
+                }
+
+                // 5. Tạo merchant_balances = 0
+                await merchantsRepository.createMerchantBalance(merchant.id, client);
+
+                const sanitizeCallbackConfig = (config) => {
+                    if (!config) return null;
+                    const { webhook_secret_hash, ...rest } = config;
+                    return rest;
+                };
+
+                await writeAuditLog({
+                    actorId: actor.userId,
+                    action: 'merchant.create',
+                    entityType: 'MERCHANT',
+                    entityId: merchant.id,
+                    oldData: null,
+                    newData: { merchant_code: merchant.merchant_code, merchant_name: merchant.merchant_name },
+                    ipAddress: actor.ipAddress,
+                    userAgent: actor.userAgent
+                });
+
+                await client.query('COMMIT');
+
+                // 6. Gửi email onboarding sau khi commit xong
+                let emailSent = false;
+                if (data.owner_info && data.owner_info.email) {
+                    emailSent = await emailService.sendOnboardingEmail(data.owner_info.email, {
+                        merchantName: merchant.merchant_name,
+                        username: data.owner_info.username,
+                        password: rawPassword
+                    });
+                }
+
+                const responseData = {
+                    ...merchant,
+                    callback_config: sanitizeCallbackConfig(callbackConfig),
+                    email_sent: emailSent
+                };
+
+                if (process.env.RETURN_TEMP_PASSWORD === 'true') {
+                    responseData.owner_password = rawPassword;
+                }
+
+                return responseData;
+            } catch (error) {
+                await client.query('ROLLBACK');
+                
+                // Lỗi duplicate key trên merchant_code (23505)
+                if (error.code === '23505' && error.constraint === 'merchants_merchant_code_key') {
+                    if (attempt < MAX_RETRIES) {
+                        console.warn(`Duplicate merchant_code generated, retrying... (Attempt ${attempt}/${MAX_RETRIES})`);
+                        client.release();
+                        continue;
+                    } else {
+                        client.release();
+                        throw new Error('Failed to generate unique merchant_code after multiple attempts');
+                    }
+                }
+
+                client.release();
+                throw error;
+            } finally {
+                // Ensure release only if not released in catch
+                if (client && typeof client.release === 'function' && !client._ending && !client._ended) {
+                    try { client.release(); } catch(e){}
+                }
             }
-
-            const sanitizeCallbackConfig = (config) => {
-                if (!config) return null;
-                const { webhook_secret_hash, ...rest } = config;
-                return rest;
-            };
-
-            await writeAuditLog({
-                actorId: actor.userId,
-                action: 'merchant.create',
-                entityType: 'MERCHANT',
-                entityId: merchant.id,
-                oldData: null,
-                newData: { merchant, callbackConfig: sanitizeCallbackConfig(callbackConfig), owner_user_id: userId },
-                ipAddress: actor.ipAddress,
-                userAgent: actor.userAgent
-            });
-
-            await client.query('COMMIT');
-            return { ...merchant, callback_config: sanitizeCallbackConfig(callbackConfig), owner_password: rawPassword };
-        } catch (error) {
-            await client.query('ROLLBACK');
-            throw error;
-        } finally {
-            client.release();
         }
     },
 
@@ -139,31 +188,49 @@ const merchantsService = {
         ensureWriteAccess(actor);
         ensureUuid(id, 'Invalid_Merchant_Id');
 
-        const merchant = await merchantsRepository.findMerchantById(id);
-        if (!merchant) throw new Error('Merchant_Not_Found');
+        const pool = merchantsRepository.getPool();
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
 
-        const rawApiKey = generateApiKey();
-        const rawSecret = generateApiSecret();
-        const secretHash = hashApiSecret(rawSecret);
+            const merchant = await merchantsRepository.findMerchantById(id);
+            if (!merchant) throw new Error('Merchant_Not_Found');
+            if (merchant.status !== 'ACTIVE') throw new Error('Merchant_Not_Active');
 
-        const newKey = await merchantsRepository.createApiKey(id, data.key_name, rawApiKey, secretHash, data.environment);
+            const existingKeys = await merchantsRepository.getMerchantApiKeys(id);
+            const hasActiveKey = existingKeys.some(k => k.environment === data.environment && k.status === 'ACTIVE');
+            if (hasActiveKey) throw new Error(`Merchant already has an ACTIVE API Key for ${data.environment}`);
 
-        await writeAuditLog({
-            actorId: actor.userId,
-            action: 'merchant_api_key.create',
-            entityType: 'MERCHANT_API_KEY',
-            entityId: newKey.id,
-            oldData: null,
-            newData: { merchant_id: id, key_name: data.key_name, environment: data.environment },
-            ipAddress: actor.ipAddress,
-            userAgent: actor.userAgent
-        });
+            const rawApiKey = generateApiKey(data.environment);
+            const rawSecret = generateApiSecret(data.environment);
+            const secretEncrypted = encryptApiSecret(rawSecret);
 
-        // Trả về duy nhất 1 lần
-        return {
-            ...newKey,
-            raw_secret: rawSecret
-        };
+            const newKey = await merchantsRepository.createApiKey(id, data.key_name, rawApiKey, secretEncrypted, data.environment, client);
+
+            await writeAuditLog({
+                actorId: actor.userId,
+                action: 'merchant_api_key.create',
+                entityType: 'MERCHANT_API_KEY',
+                entityId: newKey.id,
+                oldData: null,
+                newData: { merchant_id: id, key_name: data.key_name, environment: data.environment },
+                ipAddress: actor.ipAddress,
+                userAgent: actor.userAgent
+            });
+
+            await client.query('COMMIT');
+            
+            // Trả về duy nhất 1 lần
+            return {
+                ...newKey,
+                raw_secret: rawSecret
+            };
+        } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+        } finally {
+            client.release();
+        }
     },
 
     rotateApiKey: async (id, keyId, actor) => {
@@ -176,6 +243,10 @@ const merchantsService = {
         try {
             await client.query('BEGIN');
 
+            const merchant = await merchantsRepository.findMerchantById(id, client);
+            if (!merchant) throw new Error('Merchant_Not_Found');
+            if (merchant.status !== 'ACTIVE') throw new Error('Merchant_Not_Active');
+
             const oldKey = await merchantsRepository.findApiKeyById(keyId, client);
             if (!oldKey || oldKey.merchant_id !== id) throw new Error('Api_Key_Not_Found');
             if (oldKey.status === 'REVOKED') throw new Error('Api_Key_Already_Revoked');
@@ -184,11 +255,11 @@ const merchantsService = {
             await merchantsRepository.updateApiKeyStatus(keyId, 'REVOKED', client);
 
             // Tạo key mới
-            const rawApiKey = generateApiKey();
-            const rawSecret = generateApiSecret();
-            const secretHash = hashApiSecret(rawSecret);
+            const rawApiKey = generateApiKey(oldKey.environment);
+            const rawSecret = generateApiSecret(oldKey.environment);
+            const secretEncrypted = encryptApiSecret(rawSecret);
 
-            const newKey = await merchantsRepository.createApiKey(id, `${oldKey.key_name} (Rotated)`, rawApiKey, secretHash, oldKey.environment, client);
+            const newKey = await merchantsRepository.createApiKey(id, oldKey.key_name, rawApiKey, secretEncrypted, oldKey.environment, client);
 
             await writeAuditLog({
                 actorId: actor.userId,
@@ -214,11 +285,11 @@ const merchantsService = {
         }
     },
 
-    revokeApiKey: async (id, keyId, reason, actor) => {
+    revokeApiKey: async (id, keyId, reason = 'Admin thu hồi', actor) => {
         ensureWriteAccess(actor);
         ensureUuid(id, 'Invalid_Merchant_Id');
         ensureUuid(keyId, 'Invalid_Key_Id');
-        if (!reason || reason.trim() === '') throw new Error('Reason_Required');
+        const finalReason = reason && reason.trim() !== '' ? reason : 'Admin thu hồi';
 
         const oldKey = await merchantsRepository.findApiKeyById(keyId);
         if (!oldKey || oldKey.merchant_id !== id) throw new Error('Api_Key_Not_Found');

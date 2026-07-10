@@ -1,0 +1,32 @@
+Chủ đề: Hướng dẫn chuyển tiền cho người dùng khác trên ví điện tử Mio247.
+Từ khóa phụ: Chuyển tiền, chuyển khoản, gửi tiền, chuyển ví, chuyển qua số điện thoại, chuyển qua mã ví, hạn mức chuyển tiền, phí chuyển tiền.
+
+Điều kiện bắt buộc: Tài khoản phải đã hoàn tất định danh (KYC) và có đủ số dư trong ví để thực hiện chuyển tiền.
+
+--- HƯỚNG DẪN CHUYỂN TIỀN ---
+Các bước chuyển tiền trên Mio247:
+Bước 1: Tại trang chủ, chọn "Chuyển tiền".
+Bước 2: Tìm kiếm người nhận bằng một trong các cách sau:
+  - Nhập số điện thoại của người nhận.
+  - Nhập mã ví (Wallet Code) của người nhận.
+  - Chọn từ danh sách bạn bè/người nhận gần đây.
+  - Quét mã QR của người nhận.
+Bước 3: Nhập số tiền muốn chuyển (tối thiểu 1.000 VNĐ).
+Bước 4: Nhập ghi chú cho giao dịch (không bắt buộc, ví dụ: "Trả tiền cơm trưa").
+Bước 5: Kiểm tra thông tin giao dịch trên màn hình xác nhận: Tên người nhận, số tiền, ghi chú.
+Bước 6: Nhập mã PIN ví 6 số để xác nhận giao dịch.
+Bước 7: Giao dịch thành công! Cả hai bên sẽ nhận được thông báo.
+
+--- QUY ĐỊNH VỀ HẠN MỨC ---
+- Hạn mức chuyển tiền tối thiểu: 1.000 VNĐ/giao dịch.
+- Hạn mức chuyển tiền tối đa: 50.000.000 VNĐ/ngày (tổng cộng tất cả giao dịch chuyển tiền trong ngày).
+- Phí chuyển tiền: Miễn phí 100% cho mọi giao dịch chuyển tiền giữa các ví Mio247.
+
+--- THỜI GIAN XỬ LÝ ---
+Giao dịch chuyển tiền giữa các ví Mio247 được xử lý ngay lập tức (real-time), 24/7 kể cả ngày lễ.
+
+--- CÁC LỖI THƯỜNG GẶP ---
+1. "Người nhận không tồn tại": Số điện thoại hoặc mã ví bạn nhập không tồn tại trong hệ thống. Hãy kiểm tra lại.
+2. "Số dư không đủ": Số tiền muốn chuyển lớn hơn số dư hiện có trong ví. Hãy nạp thêm tiền.
+3. "Vượt quá hạn mức": Bạn đã chuyển vượt quá 50.000.000 VNĐ trong ngày hôm nay.
+4. "Mã PIN không đúng": Hãy nhập lại mã PIN. Nhập sai quá 5 lần sẽ bị tạm khóa giao dịch.

@@ -1,0 +1,33 @@
+Chủ đề: Hướng dẫn liên kết ví Mio247 với đối tác thương mại (Merchant) và thanh toán tại cửa hàng.
+Từ khóa phụ: Merchant, đối tác, liên kết cửa hàng, thanh toán tại cửa hàng, liên kết dịch vụ, quản lý liên kết, hạn mức merchant.
+
+--- GIỚI THIỆU ---
+Ví Mio247 cho phép bạn liên kết ví của mình với các đối tác thương mại (Merchant) để thanh toán nhanh chóng tại các cửa hàng, ứng dụng, hoặc dịch vụ trực tuyến đã hợp tác với Mio247.
+
+--- LIÊN KẾT VÍ VỚI ĐỐI TÁC ---
+Cách 1: Liên kết qua Deep Link
+Bước 1: Đối tác sẽ cung cấp cho bạn một liên kết (link) hoặc mã QR.
+Bước 2: Nhấn vào liên kết hoặc quét mã QR.
+Bước 3: Ứng dụng Mio247 sẽ tự động mở màn hình xác nhận liên kết.
+Bước 4: Kiểm tra tên đối tác và xác nhận liên kết.
+Bước 5: Liên kết thành công! Bạn có thể bắt đầu thanh toán qua đối tác này.
+
+Cách 2: Liên kết thủ công trong App
+Bước 1: Vào phần "Ví của tôi" → "Dịch vụ đã liên kết".
+Bước 2: Chọn "Thêm dịch vụ mới".
+Bước 3: Tìm kiếm tên đối tác hoặc nhập mã liên kết do đối tác cung cấp.
+Bước 4: Xác nhận liên kết.
+
+--- THANH TOÁN TẠI CỬA HÀNG ĐỐI TÁC ---
+Bước 1: Tại quầy thanh toán, cho nhân viên biết bạn muốn thanh toán bằng ví Mio247.
+Bước 2: Đối tác sẽ tạo yêu cầu thanh toán và gửi đến ví của bạn.
+Bước 3: Bạn sẽ nhận được thông báo xác nhận thanh toán trên ứng dụng.
+Bước 4: Kiểm tra số tiền và xác nhận bằng mã PIN ví.
+Bước 5: Giao dịch hoàn tất! Bạn và cửa hàng đều nhận được xác nhận.
+
+--- QUẢN LÝ DỊCH VỤ ĐÃ LIÊN KẾT ---
+Tại phần "Ví của tôi" → "Dịch vụ đã liên kết", bạn có thể:
+- Xem danh sách các đối tác đã liên kết.
+- Xem lịch sử giao dịch với từng đối tác.
+- Chỉnh sửa hạn mức thanh toán tự động cho từng đối tác.
+- Hủy liên kết với đối tác nếu không còn sử dụng.

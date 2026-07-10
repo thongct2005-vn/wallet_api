@@ -18,7 +18,10 @@ const merchantsRepository = {
         const total = parseInt(countRes.rows[0].count, 10);
 
         const listQuery = `
-            SELECT id, merchant_code, merchant_name, business_type, email, phone, status, created_at
+            SELECT id, merchant_code, merchant_name, business_type, email, phone, status, created_at,
+                   EXISTS(SELECT 1 FROM merchant_api_keys mak WHERE mak.merchant_id = merchants.id AND mak.status = 'ACTIVE') as has_api_key,
+                   (SELECT default_callback_url FROM merchant_callback_configs mcc WHERE mcc.merchant_id = merchants.id LIMIT 1) as default_callback_url,
+                   (SELECT callback_enabled FROM merchant_callback_configs mcc WHERE mcc.merchant_id = merchants.id LIMIT 1) as callback_enabled
             FROM merchants
             WHERE ${whereClause}
             ORDER BY created_at DESC
@@ -75,6 +78,35 @@ const merchantsRepository = {
         `;
         const res = await pool.query(query, [merchantId]);
         return res.rows.map(mapApiKeyRow);
+    },
+
+    generateNextMerchantCode: async (client) => {
+        // 1. Sync if not exists
+        await client.query(`
+            INSERT INTO code_sequences (id, resource_name, prefix, current_value, padding, reset_policy)
+            SELECT gen_random_uuid(), 'MERCHANT', 'MER', COALESCE((
+                SELECT MAX(CAST(SUBSTRING(merchant_code FROM 4) AS INTEGER))
+                FROM merchants
+                WHERE merchant_code ~ '^MER[0-9]{6}$'
+            ), 0), 6, 'NEVER'
+            WHERE NOT EXISTS (SELECT 1 FROM code_sequences WHERE resource_name = 'MERCHANT');
+        `);
+
+        // 2. Increment and return
+        const res = await client.query(`
+            UPDATE code_sequences
+            SET current_value = current_value + 1, updated_at = CURRENT_TIMESTAMP
+            WHERE resource_name = 'MERCHANT'
+            RETURNING prefix || LPAD(current_value::text, padding, '0') AS merchant_code
+        `);
+        return res.rows[0].merchant_code;
+    },
+
+    createMerchantBalance: async (merchantId, client) => {
+        await client.query(`
+            INSERT INTO merchant_balances (merchant_id, available_balance, pending_balance, updated_at)
+            VALUES ($1, 0, 0, CURRENT_TIMESTAMP)
+        `, [merchantId]);
     },
 
     createMerchant: async (merchantData, client = pool) => {
@@ -191,7 +223,7 @@ const merchantsRepository = {
     updateApiKeyStatus: async (keyId, status, client = pool) => {
         const query = `
             UPDATE merchant_api_keys
-            SET status = $2, revoked_at = CASE WHEN $2 = 'REVOKED' THEN NOW() ELSE revoked_at END, updated_at = NOW()
+            SET status = $2::api_key_status, revoked_at = CASE WHEN $2::text = 'REVOKED' THEN NOW() ELSE revoked_at END, updated_at = NOW()
             WHERE id = $1
             RETURNING id, key_name, status, revoked_at
         `;

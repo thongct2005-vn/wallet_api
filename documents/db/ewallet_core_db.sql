@@ -26,6 +26,57 @@ SET row_security = off;
 -- Name: group_funding_type; Type: TYPE; Schema: public; Owner: postgres
 --
 
+
+
+--27/06/2026
+ALTER TABLE ledger_transactions ADD COLUMN metadata JSONB;
+
+
+ALTER TABLE public.users
+ADD COLUMN IF NOT EXISTS is_force_change_password BOOLEAN NOT NULL DEFAULT FALSE, -- Bắt đổi mật khẩu lần đầu
+ADD COLUMN IF NOT EXISTS temporary_password_expires_at TIMESTAMPTZ NULL, -- Hạn dùng mật khẩu tạm
+ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMPTZ NULL; -- Thời điểm đổi mật khẩu gần nhất
+
+-- 1. Thêm 2 permission mới
+INSERT INTO public.permissions (id, code, name, description)
+VALUES
+(
+  '02000000-0000-0000-0000-000000000044',
+  'admin.customers.create',
+  'Admin create customers',
+  'Admin tao khach hang dung vi'
+),
+(
+  '02000000-0000-0000-0000-000000000045',
+  'admin.staffs.create',
+  'Admin create staffs',
+  'Admin tao nhan vien noi bo'
+)
+ON CONFLICT (code) DO NOTHING;
+INSERT INTO public.role_permissions (role_id, permission_id, created_at)
+SELECT r.id, p.id, NOW()
+FROM public.roles r
+JOIN public.permissions p
+  ON p.code IN ('admin.customers.create', 'admin.staffs.create')
+WHERE r.code IN ('SUPER_ADMIN', 'ADMIN')
+AND NOT EXISTS (
+  SELECT 1
+  FROM public.role_permissions rp
+  WHERE rp.role_id = r.id
+    AND rp.permission_id = p.id
+);
+
+
+--27/06/2026
+ADD COLUMN IF NOT EXISTS is_force_change_password BOOLEAN NOT NULL DEFAULT FALSE, -- Bắt đổi mật khẩu lần đầu
+ADD COLUMN IF NOT EXISTS temporary_password_expires_at TIMESTAMPTZ NULL, -- Hạn dùng mật khẩu tạm
+ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMPTZ NULL; -- Thời điểm đổi mật khẩu gần nhất
+
+ALTER TABLE ledger_transactions ADD COLUMN metadata JSONB;
+
+ ALTER TABLE public.wallet_balances 
+ADD COLUMN IF NOT EXISTS loyalty_points BIGINT NOT NULL DEFAULT 0;
+
 --26/06/2026
 ALTER TABLE idempotency_keys 
 ADD CONSTRAINT uq_idempotency_key UNIQUE (idempotency_key);
@@ -58,10 +109,10 @@ CREATE TYPE role_scope AS ENUM ('SYSTEM', 'MERCHANT');
 CREATE TYPE wallet_status AS ENUM ('ACTIVE', 'LOCKED', 'CLOSED');
 CREATE TYPE wallet_type AS ENUM ('PERSONAL');
 
-CREATE TYPE ledger_transaction_type AS ENUM ('TOPUP', 'TRANSFER', 'PAYMENT', 'REFUND', 'WITHDRAWAL', 'ADJUSTMENT');
+CREATE TYPE ledger_transaction_type AS ENUM ('TOPUP', 'TRANSFER', 'PAYMENT', 'REFUND', 'WITHDRAWAL', 'ADJUSTMENT', 'BANK_TRANSFER', 'DEPOSIT', 'WITHDRAW');
 CREATE TYPE transaction_status AS ENUM ('PENDING', 'SUCCESS', 'FAILED', 'CANCELED');
 CREATE TYPE ledger_entry_type AS ENUM ('DEBIT', 'CREDIT');
-CREATE TYPE ledger_account_type AS ENUM ('USER_WALLET', 'MERCHANT_BALANCE', 'SYSTEM_ACCOUNT');
+CREATE TYPE ledger_account_type AS ENUM ('USER_WALLET', 'MERCHANT_BALANCE', 'SYSTEM_ACCOUNT', 'PERSONAL');
 
 CREATE TYPE deposit_method AS ENUM ('SANDBOX_BANK', 'SANDBOX_CARD');
 CREATE TYPE transfer_status AS ENUM ('PENDING', 'SUCCESS', 'FAILED', 'CANCELED');
@@ -751,7 +802,10 @@ CREATE TABLE public.users (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     loyalty_member_id character varying(255),
     email_otp character varying(10),
-    email_otp_expired_at timestamp with time zone
+    email_otp_expired_at timestamp with time zone,
+    is_force_change_password boolean DEFAULT false NOT NULL,
+    temporary_password_expires_at timestamp with time zone,
+    password_changed_at timestamp with time zone
 );
 
 
@@ -878,6 +932,8 @@ CREATE TABLE public.withdrawal_transactions (
     amount bigint NOT NULL,
     currency character varying(10) DEFAULT 'VND'::character varying NOT NULL,
     withdrawal_method character varying(50) DEFAULT 'SANDBOX_BANK'::character varying NOT NULL,
+    bank_code character varying(50),
+    account_number character varying(100),
     external_reference character varying(255),
     idempotency_key character varying(255),
     status character varying(50) DEFAULT 'PENDING'::character varying NOT NULL,
@@ -1392,6 +1448,12 @@ ALTER TABLE ONLY public.merchant_api_keys
 
 ALTER TABLE ONLY public.merchant_api_keys
     ADD CONSTRAINT merchant_api_keys_pkey PRIMARY KEY (id);
+
+--
+-- Name: uq_merchant_api_keys_active_env; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX uq_merchant_api_keys_active_env ON public.merchant_api_keys USING btree (merchant_id, environment) WHERE ((status)::text = 'ACTIVE'::text);
 
 
 --

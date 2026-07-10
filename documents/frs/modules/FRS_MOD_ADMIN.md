@@ -43,10 +43,10 @@ Module này không trực tiếp tạo dòng tiền, nhưng có vai trò giám s
 
 ---
 
-### FN-ADMIN-01: Quản lý khách hàng (User App)
+### FN-ADMIN-01: Quản lý người dùng ví (User App)
 
 **Mô tả:**  
-Admin quản lý tệp khách hàng sử dụng ví điện tử (loại tài khoản USER). Bao gồm xem danh sách, tra cứu thông tin, tạo mới (tự động sinh ví mặc định), trạng thái ví và lịch sử giao dịch.
+Admin quản lý tệp người dùng sử dụng ví điện tử (loại tài khoản USER). Bao gồm xem danh sách, tra cứu thông tin, tạo mới (tự động sinh ví mặc định), trạng thái ví và lịch sử giao dịch.
 
 **Actor:** Admin, Support Staff
 
@@ -91,10 +91,11 @@ Admin quản lý tệp khách hàng sử dụng ví điện tử (loại tài kh
 |---|---|
 | BR-01 | Admin không được sửa trực tiếp số dư ví |
 | BR-02 | Khóa user bắt buộc nhập lý do |
-| BR-03 | Reset mật khẩu phải revoke session cũ |
+| BR-03 | Reset mật khẩu phải tự động sinh mã PIN tạm (6 số), revoke session cũ và yêu cầu bắt buộc đổi mật khẩu ở lần đăng nhập tiếp theo. |
 | BR-04 | Không thể khóa chính tài khoản admin đang đăng nhập |
 | BR-05 | Mọi thao tác quản trị user phải ghi audit log |
 | BR-06 | Khi tạo user (ví điện tử), hệ thống tự động tạo 1 ví mặc định trong cùng transaction. Nếu lỗi ví thì rollback user. |
+| BR-07 | Khi Admin tạo User, hệ thống sẽ sinh mã PIN tạm (6 số), yêu cầu bắt buộc đổi mật khẩu ở lần đăng nhập đầu tiên và mã có hạn 24 giờ. |
 
 ---
 
@@ -132,6 +133,7 @@ Admin cấp cao quản lý danh sách tài khoản nội bộ (ADMIN, SUPER_ADMI
 | BR-02 | Tài khoản nhân viên bắt buộc phải có Role để phần quyền (RBAC). |
 | BR-03 | Không thể khóa/xóa chính tài khoản đang đăng nhập. |
 | BR-04 | Mọi thao tác quản lý nhân viên phải ghi audit log. |
+| BR-05 | Khi Admin tạo Staff, hệ thống sẽ sinh mã PIN tạm (6 số), yêu cầu bắt buộc đổi mật khẩu ở lần đăng nhập đầu tiên và mã có hạn 24 giờ. |
 
 ---
 
@@ -419,7 +421,7 @@ Admin kỹ thuật xem log lỗi hệ thống: lỗi payment flow, lỗi webhook
 | Method | Endpoint | Mô tả |
 |---|---|---|
 | GET | `/api/v1/admin/users` | Danh sách user |
-| POST | `/api/v1/admin/customers` | Tạo khách hàng (tự động cấp ví) |
+| POST | `/api/v1/admin/users` | Tạo người dùng ví (tự động cấp ví) |
 | POST | `/api/v1/admin/staffs` | Tạo nhân viên nội bộ (gán Role RBAC) |
 | GET | `/api/v1/admin/users/{id}` | Chi tiết user |
 | PATCH | `/api/v1/admin/users/{id}` | Cập nhật thông tin user |
@@ -464,7 +466,7 @@ Admin kỹ thuật xem log lỗi hệ thống: lỗi payment flow, lỗi webhook
 | # | Tiêu chí |
 |---|---|
 | AC-01 | Admin xem được danh sách user |
-| AC-01b | Admin tạo được KHÁCH HÀNG mới thành công (hệ thống tự động cấp ví và role USER) |
+| AC-01b | Admin tạo được NGƯỜI DÙNG VÍ mới thành công (hệ thống tự động cấp ví và role USER) |
 | AC-01c | Admin tạo được NHÂN VIÊN mới thành công (hệ thống gán role RBAC, không cấp ví) |
 | AC-01d | Admin tạo được MERCHANT mới thành công (kèm Merchant Owner, API Key, Webhook) |
 | AC-01e | Admin cập nhật được thông tin user cơ bản |

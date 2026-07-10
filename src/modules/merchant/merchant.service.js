@@ -158,6 +158,16 @@ const merchantService = {
             });
 
             await client.query('COMMIT');
+            
+            // [NEW] Emit realtime balance to merchant owner
+            if (merchantId) {
+                const ownerId = await merchantRepository.getMerchantUserId(merchantId);
+                if (ownerId) {
+                    const { emitToUser } = require('../../utils/socket');
+                    emitToUser(ownerId, 'merchant_balance_update', { newBalance: mBalanceAfter.toString() });
+                }
+            }
+
             return {
                 amount: amount.toString(),
                 merchantBalance: mBalanceAfter.toString(),
@@ -182,7 +192,11 @@ const merchantService = {
             const userWallet = await txRepo.getWalletForPinCheck(userId);
             if (!userWallet) throw new Error('Không tìm thấy ví cá nhân của bạn');
             
-            const isPinValid = await bcrypt.compare(pin, userWallet.pin_hash);
+            const pepper = process.env.PIN_PEPPER || '';
+            let isPinValid = await bcrypt.compare(pin + pepper, userWallet.pin_hash);
+            if (!isPinValid && pepper !== '') {
+                isPinValid = await bcrypt.compare(pin, userWallet.pin_hash);
+            }
             if (!isPinValid) throw new Error('Mã PIN không chính xác');
 
             await client.query('BEGIN');
@@ -228,6 +242,16 @@ const merchantService = {
             });
 
             await client.query('COMMIT');
+            
+            // [NEW] Emit realtime balance to merchant owner
+            if (merchantId) {
+                const ownerId = await merchantRepository.getMerchantUserId(merchantId);
+                if (ownerId) {
+                    const { emitToUser } = require('../../utils/socket');
+                    emitToUser(ownerId, 'merchant_balance_update', { newBalance: mBalanceAfter.toString() });
+                }
+            }
+
             return {
                 amount: amount.toString(),
                 merchantBalance: mBalanceAfter.toString(),

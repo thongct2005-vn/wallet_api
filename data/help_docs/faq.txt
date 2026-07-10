@@ -1,0 +1,49 @@
+Chủ đề: Câu hỏi thường gặp (FAQ) về ví điện tử Mio247.
+Từ khóa phụ: FAQ, câu hỏi thường gặp, hỏi đáp, thắc mắc, Mio247 là gì, liên hệ, tổng đài, CSKH, hỗ trợ.
+
+--- MIO247 LÀ GÌ? ---
+Mio247 là ứng dụng ví điện tử cho phép bạn thanh toán, chuyển tiền, nạp/rút tiền, và quản lý tài chính ngay trên điện thoại di động. Mio247 hoạt động 24/7, mọi lúc mọi nơi.
+
+--- TÔI CÓ THỂ SỬ DỤNG MIO247 TRÊN THIẾT BỊ NÀO? ---
+Mio247 hỗ trợ:
+- Điện thoại Android (phiên bản 6.0 trở lên).
+- Điện thoại iPhone/iOS (phiên bản 13.0 trở lên).
+Hiện tại Mio247 chưa hỗ trợ sử dụng trên máy tính hoặc trình duyệt web.
+
+--- ĐĂNG KÝ CÓ MẤT PHÍ KHÔNG? ---
+Hoàn toàn miễn phí. Bạn chỉ cần một số điện thoại di động đang hoạt động để đăng ký tài khoản Mio247.
+
+--- TÔI QUÊN MẬT KHẨU THÌ PHẢI LÀM SAO? ---
+Bạn có thể đặt lại mật khẩu bằng cách nhấn "Quên mật khẩu" trên màn hình đăng nhập. Hệ thống sẽ yêu cầu xác thực khuôn mặt và gửi mã OTP để bạn tạo mật khẩu mới.
+
+--- SỐ DƯ TỐI ĐA TRONG VÍ LÀ BAO NHIÊU? ---
+Số dư tối đa trong ví Mio247 phụ thuộc vào cấp độ tài khoản:
+- Tài khoản chưa KYC: Tối đa 10.000.000 VNĐ.
+- Tài khoản đã KYC: Tối đa 100.000.000 VNĐ.
+
+--- CHUYỂN TIỀN CÓ MẤT PHÍ KHÔNG? ---
+Chuyển tiền giữa các ví Mio247 hoàn toàn miễn phí, không giới hạn số lần giao dịch.
+
+--- NẠP TIỀN CÓ MẤT PHÍ KHÔNG? ---
+Nạp tiền từ ngân hàng vào ví Mio247 hoàn toàn miễn phí.
+
+--- RÚT TIỀN CÓ MẤT PHÍ KHÔNG? ---
+Miễn phí 3 giao dịch rút tiền đầu tiên mỗi tháng. Từ giao dịch thứ 4, phí là 3.300 VNĐ/giao dịch.
+
+--- TÔI CÓ THỂ CHUYỂN TIỀN CHO NGƯỜI CHƯA CÓ TÀI KHOẢN MIO247 KHÔNG? ---
+Không. Người nhận cũng phải có tài khoản Mio247 để nhận tiền chuyển khoản.
+
+--- GIAO DỊCH BỊ LỖI, TIỀN ĐÃ TRỪ NHƯNG CHƯA VỀ? ---
+Nếu giao dịch bị lỗi mà tiền đã bị trừ, hệ thống sẽ tự động hoàn tiền trong vòng 5-15 phút. Nếu sau 30 phút vẫn chưa nhận được tiền hoàn, vui lòng liên hệ CSKH.
+
+--- LIÊN HỆ HỖ TRỢ KHÁCH HÀNG ---
+Nếu cần hỗ trợ, bạn có thể liên hệ qua:
+- Tổng đài: 1900 xxxx (24/7).
+- Chat trực tiếp trong ứng dụng với Trợ thủ AI Mio247.
+- Email: support@mio247.vn
+
+--- TÔI CÓ THỂ SỬ DỤNG MIO247 Ở NƯỚC NGOÀI KHÔNG? ---
+Hiện tại Mio247 chỉ hoạt động tại Việt Nam. Các giao dịch quốc tế chưa được hỗ trợ.
+
+--- LÀM SAO ĐỂ XÓA TÀI KHOẢN? ---
+Nếu muốn xóa tài khoản Mio247, vui lòng liên hệ tổng đài CSKH 1900 xxxx. Trước khi xóa, bạn cần rút hết số dư về ngân hàng và hủy tất cả liên kết dịch vụ.

@@ -30,6 +30,7 @@ const rolesController = {
             }, actor);
             return success(res, result, 'Tao role thanh cong');
         } catch (err) {
+            console.error('[rolesController.createRole] Error:', err);
             return handleAdminError(res, err, 'Loi admin create role:');
         }
     },
@@ -44,6 +45,7 @@ const rolesController = {
             }, actor);
             return success(res, result, 'Cap nhat role thanh cong');
         } catch (err) {
+            console.error('[rolesController.updateRole] Error:', err);
             return handleAdminError(res, err, 'Loi admin update role:');
         }
     },
