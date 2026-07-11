@@ -569,6 +569,8 @@ const merchantController = {
             const { merchant_id: merchantId, is_owner, role_code } = req.merchantContext;
             const { amount } = req.body;
 
+            const idempotencyKey = req.headers['idempotency-key'];
+
             if (!amount || amount <= 0) {
                 return res.status(400).json({ error: 'Số tiền rút không hợp lệ' });
             }
@@ -577,7 +579,7 @@ const merchantController = {
                 return res.status(403).json({ error: 'Chỉ chủ cửa hàng mới có quyền rút doanh thu' });
             }
 
-            const result = await merchantService.withdrawToWallet(merchantId, userId, amount);
+            const result = await merchantService.withdrawToWallet(merchantId, userId, amount, idempotencyKey);
 
             res.status(200).json({
                 message: 'Rút doanh thu về ví cá nhân thành công',

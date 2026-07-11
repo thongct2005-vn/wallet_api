@@ -262,12 +262,17 @@ const paymentService = {
                 }).catch(err => console.error('[WEBHOOK_PUBLISH_ERROR]', err));
             }
 
+            // Return the sequence transaction_no directly
+
             return {
                 order_id: order.merchant_order_id || order.order_code,
                 merchant_order_id: order.merchant_order_id || null,
                 order_code: order.order_code,
+                transaction_id: paymentTxId,
+                reference_code: transaction_no,
                 amount_paid: order.amount ? order.amount.toString() : '0',
-                balance_remaining: balanceAfter ? balanceAfter.toString() : '0'
+                balance_remaining: balanceAfter ? balanceAfter.toString() : '0',
+                timestamp: new Date().toISOString()
             };
         } catch (error) {
             await client.query('ROLLBACK');

@@ -412,10 +412,11 @@ const transactionService = {
             const receiverBalanceAfter = await repo.addBalance(client, receiverWallet.id, amount);
 
             const tId = uuidv7();
-            const hex = tId.replace(/-/g, '').substring(0, 10);
-            const finalRef = BigInt('0x' + hex).toString().padStart(12, '0').slice(0, 12);
 
             const ledgerTxId = await repo.createLedgerTransaction(client, 'TRANSFER', tId, 'TRANSFER', note || 'Chuyển tiền qua Ví', amount);
+            
+            const resTxNo = await client.query('SELECT transaction_no FROM ledger_transactions WHERE id = $1', [ledgerTxId]);
+            const finalRef = resTxNo.rows[0].transaction_no;
 
             await repo.createLedgerEntry(client, ledgerTxId, senderWallet.id, 'DEBIT', amount, senderBalanceBefore, senderBalanceAfter);
             await repo.createLedgerEntry(client, ledgerTxId, receiverWallet.id, 'CREDIT', amount, receiverBalanceBefore, receiverBalanceAfter);
@@ -483,8 +484,7 @@ const transactionService = {
                 });
             }
 
-            const resTxNo = await client.query('SELECT transaction_no FROM ledger_transactions WHERE id = $1', [ledgerTxId]);
-            const transaction_no = resTxNo.rows[0].transaction_no;
+            const transaction_no = finalRef;
 
             broadcastToAdminDashboard('DASHBOARD_UPDATE', {
                 transaction_no,
@@ -558,7 +558,7 @@ const transactionService = {
         const history = await repo.getTransactionHistory(wallet.id, limit, offset, filters);
 
         return history.map(item => {
-            let ref = item.external_reference;
+            let ref = item.transaction_no || item.external_reference;
             if (!ref && item.transaction_id) {
                 const hex = item.transaction_id.replace(/-/g, '').substring(0, 10);
                 ref = BigInt('0x' + hex).toString().padStart(12, '0').slice(0, 12);

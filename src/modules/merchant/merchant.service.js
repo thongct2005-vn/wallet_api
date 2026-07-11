@@ -86,7 +86,7 @@ const merchantService = {
         return true;
     },
 
-    withdrawToWallet: async (merchantId, userId, amountStr, pin) => {
+    withdrawToWallet: async (merchantId, userId, amountStr, idempotencyKey = null) => {
         const client = await pool.connect();
         try {
             const amount = BigInt(amountStr);
@@ -141,7 +141,7 @@ const merchantService = {
             `, [(dailyUsage + amount).toString(), merchantWalletId]);
 
             const tId = uuidv7();
-            const ledgerTxId = await txRepo.createLedgerTransaction(client, 'MERCHANT_PAYOUT', tId, 'TRANSFER', 'Rút tiền doanh thu về ví cá nhân', amount);
+            const ledgerTxId = await txRepo.createLedgerTransaction(client, 'MERCHANT_PAYOUT', tId, 'TRANSFER', 'Rút tiền doanh thu về ví cá nhân', amount, 'VND', null, idempotencyKey);
 
             await txRepo.createLedgerEntry(client, ledgerTxId, merchantWalletId, 'DEBIT', amount, mBalanceBefore, mBalanceAfter, 'MERCHANT');
             await txRepo.createLedgerEntry(client, ledgerTxId, userWallet.id, 'CREDIT', amount, uBalanceBefore, uBalanceAfter, 'PERSONAL');

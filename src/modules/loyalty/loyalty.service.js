@@ -22,8 +22,15 @@ const loyaltyService = {
                 groupedHistory[monthYear] = [];
             }
             
+            let ref = item.transaction_no || item.external_reference;
+            if (!ref && item.transaction_id) {
+                const hex = item.transaction_id.replace(/-/g, '').substring(0, 10);
+                ref = BigInt('0x' + hex).toString().padStart(12, '0').slice(0, 12);
+            }
+
             groupedHistory[monthYear].push({
                 ...item,
+                external_reference: ref,
                 // Make positive/negative explicit
                 display_amount: (item.entry_type === 'CREDIT' ? '+' : '-') + item.amount + ' Xu'
             });

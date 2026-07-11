@@ -83,6 +83,39 @@ const rolesService = {
 
     listPermissions: async () => {
         return rolesRepository.listPermissions();
+    },
+
+    deleteRole: async (id, payload, actor) => {
+        ensureWriteAccess(actor);
+        ensureUuid(id, 'Invalid_Role_Id');
+
+        const role = await rolesRepository.findRoleById(id);
+        if (!role) throw new Error('Role_Not_Found');
+
+        if (SYSTEM_ROLES.includes(role.code)) {
+            throw new Error('Cannot_Delete_System_Role');
+        }
+
+        try {
+            await rolesRepository.deleteRole(id);
+        } catch (err) {
+            if (err.code === '23503') {
+                throw new Error('Role_In_Use');
+            }
+            throw err;
+        }
+
+        await writeAuditLog({
+            actorId: actor.userId,
+            action: 'role.delete',
+            entityType: 'ROLE',
+            entityId: id,
+            oldData: { code: role.code, name: role.name },
+            ipAddress: payload.ipAddress,
+            userAgent: payload.userAgent
+        });
+
+        return { success: true };
     }
 };
 

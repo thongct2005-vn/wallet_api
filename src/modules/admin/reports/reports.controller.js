@@ -64,6 +64,14 @@ const reportsController = {
             return handleAdminError(res, err, '[ReportsController][getMerchantReport]');
         }
     },
+    getFeesReport: async (req, res) => {
+        try {
+            const data = await reportsService.getFeesReport(req.query);
+            return success(res, data, 'Lấy báo cáo phí thu được thành công');
+        } catch (err) {
+            return handleAdminError(res, err, '[ReportsController][getFeesReport]');
+        }
+    },
     exportReport: async (req, res) => {
         try {
             const { buffer, sheetName } = await reportsService.exportReport(req.query);

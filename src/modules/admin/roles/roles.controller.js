@@ -57,6 +57,21 @@ const rolesController = {
         } catch (err) {
             return handleAdminError(res, err, 'Loi admin list permissions:');
         }
+    },
+
+    deleteRole: async (req, res) => {
+        try {
+            const actor = { ...req.user, ...getRequestMeta(req) };
+            const payload = {
+                ipAddress: req.ip,
+                userAgent: req.get('user-agent')
+            };
+            const result = await rolesService.deleteRole(req.params.id, payload, actor);
+            return success(res, result, 'Xoa role thanh cong');
+        } catch (err) {
+            console.error('[rolesController.deleteRole] Error:', err);
+            return handleAdminError(res, err, 'Loi admin delete role:');
+        }
     }
 };
 

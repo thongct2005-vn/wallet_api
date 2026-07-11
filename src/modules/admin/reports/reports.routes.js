@@ -98,6 +98,7 @@ router.get('/transfers', reportsController.getTransferReport);
 router.get('/payments', reportsController.getPaymentReport);
 router.get('/refunds', reportsController.getRefundReport);
 router.get('/merchants', reportsController.getMerchantReport);
+router.get('/fees', reportsController.getFeesReport);
 router.get('/webhooks', notImplemented('GET /admin/reports/webhooks'));
 router.get('/ledger', notImplemented('GET /admin/reports/ledger'));
 router.get('/export', reportsController.exportReport);

@@ -51,6 +51,12 @@ const reportsService = {
         const { page, limit, status } = query;
         return reportsRepository.getMerchantReport({ page, limit, from, to, status });
     },
+    getFeesReport: async (query) => {
+        const from = query.from || query.fromDate;
+        const to = query.to || query.toDate;
+        const { page, limit } = query;
+        return reportsRepository.getFeesReport({ page, limit, from, to });
+    },
     exportReport: async (query) => {
         const from = query.from || query.fromDate;
         const to = query.to || query.toDate;
@@ -121,6 +127,15 @@ const reportsService = {
                     { header: 'Trạng thái', key: 'status', width: 15 },
                 ];
                 sheetName = 'Merchants';
+                break;
+            case 'fees':
+                reportData = await reportsRepository.getFeesReport(params);
+                columns = [
+                    { header: 'Mã GD Gốc', key: 'ledger_transaction_id', width: 25 },
+                    { header: 'Số tiền phí', key: 'amount', width: 15 },
+                    { header: 'Thời gian', key: 'created_at', width: 25 },
+                ];
+                sheetName = 'Fees';
                 break;
             default:
                 throw new Error('Loại báo cáo không hợp lệ: ' + type);

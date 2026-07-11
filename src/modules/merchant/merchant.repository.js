@@ -452,31 +452,70 @@ const merchantRepository = {
     },
 
     getMerchantStatement: async (merchantId, filters) => {
-        const { page = 1, limit = 20, date_from, date_to, sort_by = 'created_at', sort_order = 'desc' } = filters;
+        const { page = 1, limit = 20, date_from, date_to, type, sort_by = 'created_at', sort_order = 'desc' } = filters;
         const offset = (page - 1) * limit;
         const params = [merchantId];
-        const where = ['merchant_id = $1'];
+        const where = ['le.merchant_id = $1'];
 
         if (date_from) {
             params.push(date_from);
-            where.push(`created_at >= $${params.length}`);
+            where.push(`le.created_at >= $${params.length}`);
         }
         if (date_to) {
             params.push(date_to);
-            where.push(`created_at <= $${params.length}`);
+            where.push(`le.created_at <= $${params.length}`);
+        }
+        if (type) {
+            params.push(type.toUpperCase());
+            where.push(`le.entry_type = $${params.length}`);
         }
 
         const whereSql = where.join(' AND ');
         
-        const countResult = await pool.query(`SELECT COUNT(*)::int as total FROM ledger_entries WHERE ${whereSql}`, params);
+        const countResult = await pool.query(`SELECT COUNT(*)::int as total FROM ledger_entries le WHERE ${whereSql}`, params);
         const total = countResult.rows[0].total;
 
         params.push(limit, offset);
         const result = await pool.query(`
-            SELECT id, ledger_transaction_id, entry_type, amount, balance_before, balance_after, description, created_at
-            FROM ledger_entries
+            SELECT 
+                le.id,
+                le.ledger_transaction_id,
+                le.entry_type,
+                le.amount,
+                le.balance_before,
+                le.balance_after,
+                le.description,
+                le.created_at,
+                lt.transaction_type,
+                lt.source_type,
+                lt.source_id,
+                -- Thông tin đơn hàng (khi là CREDIT từ PAYMENT)
+                po.payment_no,
+                po.amount AS order_amount,
+                -- Thông tin khách hàng thanh toán
+                u_payer.full_name AS payer_name,
+                u_payer.phone AS payer_phone,
+                -- Thông tin rút tiền
+                wt_act.bank_code,
+                wt_act.account_number AS bank_account_number,
+                -- Thông tin rút về ví cá nhân
+                u_wallet.full_name AS wallet_owner_name,
+                u_wallet.phone AS wallet_owner_phone
+            FROM ledger_entries le
+            JOIN ledger_transactions lt ON le.ledger_transaction_id = lt.id
+            -- JOIN payment (nhận doanh thu từ đơn hàng)
+            LEFT JOIN payment_transactions pt ON lt.source_type = 'PAYMENT' AND lt.source_id = pt.id
+            LEFT JOIN payment_orders po ON pt.payment_order_id = po.id
+            LEFT JOIN wallets w_payer ON pt.payer_wallet_id = w_payer.id
+            LEFT JOIN users u_payer ON w_payer.user_id = u_payer.id
+            -- JOIN withdrawal (rút về ngân hàng)
+            LEFT JOIN withdrawal_transactions wt_act ON lt.source_type = 'WITHDRAWAL' AND lt.source_id = wt_act.id
+            -- JOIN transfer (rút về ví cá nhân)
+            LEFT JOIN wallet_transfers wtr ON lt.source_type = 'TRANSFER' AND lt.source_id = wtr.id
+            LEFT JOIN wallets w_recv ON wtr.receiver_wallet_id = w_recv.id
+            LEFT JOIN users u_wallet ON w_recv.user_id = u_wallet.id
             WHERE ${whereSql}
-            ORDER BY ${sort_by} ${sort_order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC'}
+            ORDER BY le.created_at ${sort_order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC'}
             LIMIT $${params.length - 1} OFFSET $${params.length}
         `, params);
 

@@ -321,6 +321,51 @@ const reportsRepository = {
             data: dataRes.rows,
             pagination: { page: parseInt(params.page) || 1, limit, total: parseInt(summaryRes.rows[0].total_count) }
         };
+    },
+
+    getFeesReport: async (params) => {
+        const { limit, offset } = buildPagination(params.page, params.limit);
+        let conditions = [`system_account_code = 'SYS_FEE_MDR'`];
+        let values = [];
+        let paramIndex = 1;
+
+        if (params.from) {
+            conditions.push(`created_at >= $${paramIndex++}`);
+            values.push(params.from);
+        }
+        if (params.to) {
+            conditions.push(`created_at <= $${paramIndex++}`);
+            values.push(params.to);
+        }
+
+        const whereClause = `WHERE ${conditions.join(' AND ')}`;
+        
+        const summaryQuery = `
+            SELECT 
+                COUNT(*) as total_count,
+                COALESCE(SUM(amount), 0) as total_revenue
+            FROM ledger_entries
+            ${whereClause}
+        `;
+
+        const dataQuery = `
+            SELECT id, created_at, amount, ledger_transaction_id
+            FROM ledger_entries
+            ${whereClause}
+            ORDER BY created_at DESC
+            LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+        `;
+        
+        const [summaryRes, dataRes] = await Promise.all([
+            pool.query(summaryQuery, values),
+            pool.query(dataQuery, [...values, limit, offset])
+        ]);
+
+        return {
+            summary: summaryRes.rows[0],
+            data: dataRes.rows,
+            pagination: { page: parseInt(params.page) || 1, limit, total: parseInt(summaryRes.rows[0].total_count) }
+        };
     }
 };
 

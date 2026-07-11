@@ -90,23 +90,21 @@ const transactionRepository = {
 
     createLedgerTransaction: async (client, type, sourceId, sourceType, description, amount, currency = 'VND', metadata = null, idempotencyKey = null) => {
         const newId = uuidv7();
-        const transactionNo = 'TRX' + Date.now().toString().slice(-8) + Math.floor(1000 + Math.random() * 9000).toString();
         const query = `
             INSERT INTO ledger_transactions (id, transaction_no, transaction_type, source_id, source_type, status, description, amount, currency, completed_at, metadata, idempotency_key)
-            VALUES ($1, $2, $3, $4, $5, 'SUCCESS', $6, $7, $8, CURRENT_TIMESTAMP, $9, $10) RETURNING id;
+            VALUES ($1, nextval('transaction_ref_seq')::text, $2, $3, $4, 'SUCCESS', $5, $6, $7, CURRENT_TIMESTAMP, $8, $9) RETURNING id, transaction_no;
         `;
-        const result = await client.query(query, [newId, transactionNo, type, sourceId, sourceType, description, amount.toString(), currency, metadata, idempotencyKey]);
+        const result = await client.query(query, [newId, type, sourceId, sourceType, description, amount.toString(), currency, metadata, idempotencyKey]);
         return result.rows[0].id;
     },
 
     createFailedLedgerTransaction: async (type, description, amount, createdBy = null) => {
         const newId = uuidv7();
-        const transactionNo = 'TRX' + Date.now().toString().slice(-8) + Math.floor(1000 + Math.random() * 9000).toString();
         const query = `
             INSERT INTO ledger_transactions (id, transaction_no, transaction_type, status, description, amount, created_by, completed_at)
-            VALUES ($1, $2, $3, 'FAILED', $4, $5, $6, CURRENT_TIMESTAMP) RETURNING id;
+            VALUES ($1, nextval('transaction_ref_seq')::text, $2, 'FAILED', $3, $4, $5, CURRENT_TIMESTAMP) RETURNING id, transaction_no;
         `;
-        const result = await pool.query(query, [newId, transactionNo, type, description, amount.toString(), createdBy]);
+        const result = await pool.query(query, [newId, type, description, amount.toString(), createdBy]);
         return result.rows[0].id;
     },
 
@@ -295,6 +293,7 @@ const transactionRepository = {
             SELECT 
                 le.id AS entry_id,
                 le.ledger_transaction_id AS transaction_id,
+                lt.transaction_no,
                 lt.transaction_type,
                 COALESCE(lt.category_name, lt.transaction_type) AS category_name,
                 COALESCE(lt.is_expense_counted, true) AS is_expense_counted,
@@ -443,6 +442,7 @@ const transactionRepository = {
             SELECT 
                 le.id AS entry_id,
                 le.ledger_transaction_id AS transaction_id,
+                lt.transaction_no,
                 lt.transaction_type,
                 lt.transaction_type AS category_name,
                 true AS is_expense_counted,

@@ -153,6 +153,22 @@ const rolesRepository = {
         `;
         const res = await pool.query(query);
         return res.rows.map(mapPermissionRow);
+    },
+
+    deleteRole: async (id) => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            await client.query('DELETE FROM role_permissions WHERE role_id = $1', [id]);
+            const res = await client.query('DELETE FROM roles WHERE id = $1 RETURNING id', [id]);
+            await client.query('COMMIT');
+            return res.rowCount > 0;
+        } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+        } finally {
+            client.release();
+        }
     }
 };
 

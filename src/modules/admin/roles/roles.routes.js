@@ -104,5 +104,6 @@ router.get('/', requirePermission('admin.roles.read'), rolesController.listRoles
 router.post('/', requirePermission('admin.roles.create'), rolesValidator.validateCreateRole, rolesController.createRole);
 router.get('/:id', requirePermission('admin.roles.read'), rolesValidator.validateIdParam, rolesController.getRoleDetail);
 router.patch('/:id', requirePermission('admin.roles.update'), rolesValidator.validateIdParam, rolesValidator.validateUpdateRole, rolesController.updateRole);
+router.delete('/:id', requirePermission('admin.roles.delete'), rolesValidator.validateIdParam, rolesController.deleteRole);
 
 module.exports = router;

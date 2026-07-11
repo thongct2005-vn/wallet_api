@@ -9,7 +9,7 @@ const withIdempotency = async (req, res, next) => {
         return res.status(400).json({
             success: false,
             error_code: 'IDEMPOTENCY_KEY_REQUIRED',
-            message: 'Thiếu header Idempotency-Key. Mỗi giao dịch tài chính cần có mã duy nhất để chống trùng lặp.'
+            error: 'Yêu cầu không hợp lệ. Giao dịch thiếu thông tin xác thực an toàn.'
         });
     }
     try {
@@ -20,19 +20,18 @@ const withIdempotency = async (req, res, next) => {
                 return res.status(409).json({
                     success: false,
                     error_code: 'IDEMPOTENCY_PAYLOAD_MISMATCH',
-                    message: 'Idempotency Key đã được sử dụng với một nội dung Payload khác. Vui lòng tạo Key mới.'
+                    error: 'Yêu cầu trùng lặp bị từ chối để đảm bảo an toàn. Vui lòng thực hiện lại giao dịch mới.'
                 });
             }
             return res.status(200).json(existingRecord.response_data);
         }
 
-        // Lock bằng Redis (Chống Concurrency 100 requests cùng lúc)
         let lockKey = null;
         if (redis.status === 'ready') {
             lockKey = `idempotency_lock:${idempotencyKey}`;
             const acquired = await redis.setnx(lockKey, 'locked');
             if (!acquired) {
-                return res.status(409).json({ message: 'Giao dịch đang được xử lý, vui lòng không lặp lại yêu cầu.' });
+                return res.status(409).json({ error: 'Giao dịch đang được xử lý, vui lòng không lặp lại yêu cầu.' });
             }
             await redis.expire(lockKey, 30);
         }

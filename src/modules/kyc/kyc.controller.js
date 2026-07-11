@@ -26,12 +26,12 @@ const kycController = {
             }
 
             const idFrontPath = req.file.path;
-            const fptOcrResult = await kycService.extractOcrFptAi(idFrontPath);
+            const ocrResult = await kycService.extractOcrViettelAI(idFrontPath);
 
             let extractedData;
             
-            if (!fptOcrResult.success) {
-                console.warn(`⚠️ FPT.AI OCR Failed in ocrFront: ${fptOcrResult.message}. Using mock data.`);
+            if (!ocrResult.success) {
+                console.warn(`Viettel AI OCR Failed in ocrFront: ${ocrResult.message}. Using mock data.`);
                 extractedData = {
                     id_number: '079099999999',
                     full_name: 'NGUYEN VAN DEMO',
@@ -40,12 +40,13 @@ const kycController = {
                     address: 'Số 1, Phường Demo, Quận Test, TP.HCM'
                 };
             } else {
+                // Map fields từ Viettel AI (hỗ trợ nhiều format tên field)
                 extractedData = {
-                    id_number: fptOcrResult.data.id || fptOcrResult.data.id_number || fptOcrResult.data.id_card,
-                    full_name: fptOcrResult.data.name,
-                    dob: fptOcrResult.data.dob,
-                    gender: fptOcrResult.data.sex,
-                    address: fptOcrResult.data.address || fptOcrResult.data.home
+                    id_number: ocrResult.data.id || ocrResult.data.id_number || ocrResult.data.id_card,
+                    full_name: ocrResult.data.name || ocrResult.data.full_name,
+                    dob: ocrResult.data.dob || ocrResult.data.birthday,
+                    gender: ocrResult.data.gender || ocrResult.data.sex,
+                    address: ocrResult.data.address || ocrResult.data.home
                 };
             }
 

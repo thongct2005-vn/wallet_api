@@ -116,6 +116,7 @@ const loyaltyRepository = {
             SELECT 
                 le.id AS entry_id,
                 le.ledger_transaction_id AS transaction_id,
+                lt.transaction_no,
                 lt.transaction_type,
                 COALESCE(lt.category_name, lt.transaction_type) AS category_name,
                 COALESCE(lt.is_expense_counted, true) AS is_expense_counted,
